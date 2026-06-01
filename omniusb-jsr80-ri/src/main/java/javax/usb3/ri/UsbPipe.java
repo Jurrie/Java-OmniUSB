@@ -82,8 +82,6 @@ public abstract class UsbPipe implements IUsbPipe, AutoCloseable
 	/**
 	 * Ensures the pipe is active.
 	 *
-	 * @throws UsbException
-	 *
 	 * @throws UsbNotActiveException When pipe is not active
 	 */
 	private void checkActive() throws UsbNotActiveException
@@ -127,7 +125,7 @@ public abstract class UsbPipe implements IUsbPipe, AutoCloseable
 	}
 
 	/**
-	 * @inerit
+	 * {@inheritDoc}
 	 *
 	 * @throws UsbException if the Pipe is already open
 	 */
@@ -146,7 +144,7 @@ public abstract class UsbPipe implements IUsbPipe, AutoCloseable
 	}
 
 	/**
-	 * @inerit
+	 * {@inheritDoc}
 	 *
 	 * @throws UsbException if the Pipe is already closed or the Pipe is still
 	 *             busy
@@ -184,8 +182,6 @@ public abstract class UsbPipe implements IUsbPipe, AutoCloseable
 
 	/**
 	 * {@inheritDoc}
-	 *
-	 * @throws UsbException
 	 */
 	@Override
 	public boolean isActive()
@@ -320,7 +316,8 @@ public abstract class UsbPipe implements IUsbPipe, AutoCloseable
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @throws UsbException
+	 * @throws UsbNotActiveException
+	 * @throws UsbNotOpenException
 	 */
 	@Override
 	public void abortAllSubmissions() throws UsbNotActiveException, UsbNotOpenException

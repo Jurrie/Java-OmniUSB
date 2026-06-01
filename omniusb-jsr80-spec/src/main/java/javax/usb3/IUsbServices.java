@@ -118,8 +118,8 @@ public interface IUsbServices
 	 * Get the (minimum) version number of the javax.usb API that this
 	 * IUsbServices implements.
 	 * <p>
-	 * This should correspond to the output of (some version of) the
-	 * {@link javax.usb.Version#getApiVersion() javax.usb.Version}.
+	 * This should correspond to the output of (some version of)
+	 * <code>javax.usb.Version.getApiVersion()</code> in the old <code>javax.usb.usb-api:usb-api:1.0.2</code>.
 	 *
 	 * @return the version number of the minimum API version.
 	 */
@@ -128,7 +128,7 @@ public interface IUsbServices
 	/**
 	 * Get the version number of the IUsbServices implementation.
 	 * <p>
-	 * The format should be <major>.<minor>.<revision>
+	 * The format should be &lt;major&gt;.&lt;minor&gt;.&lt;revision&gt;
 	 *
 	 * @return the version number of the IUsbServices implementation.
 	 */

@@ -25,26 +25,28 @@ package javax.usb3.exception;
  *
  * @author Dan Streetman
  * @author Jesse Caulfield
- * @see javax.usb.UsbIrp#getAcceptShortPacket() UsbIrps indicate if this
- * UsbException should be generated or not.
+ * @see javax.usb3.IUsbIrp#getAcceptShortPacket() UsbIrps indicate if this
+ *      UsbException should be generated or not.
  */
-public class UsbShortPacketException extends UsbException {
+public class UsbShortPacketException extends UsbException
+{
+	private static final long serialVersionUID = 1L;
 
-  private static final long serialVersionUID = 1L;
+	/**
+	 * Constructor.
+	 */
+	public UsbShortPacketException()
+	{
+		super();
+	}
 
-  /**
-   * Constructor.
-   */
-  public UsbShortPacketException() {
-    super();
-  }
-
-  /**
-   * Constructor.
-   *
-   * @param s The detail message.
-   */
-  public UsbShortPacketException(String s) {
-    super(s);
-  }
+	/**
+	 * Constructor.
+	 *
+	 * @param s The detail message.
+	 */
+	public UsbShortPacketException(final String s)
+	{
+		super(s);
+	}
 }

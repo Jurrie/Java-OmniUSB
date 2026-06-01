@@ -48,12 +48,10 @@ public class UsbInterface extends AUsbInterface
 	/**
 	 * Ensures this setting and configuration is active.
 	 *
-	 * @throws UsbException
-	 *
 	 * @throws UsbNotActiveException When the setting or the configuration is not
 	 *             active.
 	 */
-	private void checkActive() throws UsbException
+	private void checkActive() throws UsbNotActiveException
 	{
 		if (!getUsbConfiguration().isActive())
 		{
@@ -111,19 +109,12 @@ public class UsbInterface extends AUsbInterface
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @throws UsbException
+	 * @throws UsbNotActiveException
 	 */
 	@Override
 	public byte getActiveSettingNumber() throws UsbNotActiveException
 	{
-		try
-		{
-			checkActive();
-		}
-		catch (UsbException e)
-		{
-			throw new UsbNotActiveException(e.getLocalizedMessage());
-		}
+		checkActive();
 		return getUsbConfiguration()
 				.getUsbInterface(getUsbInterfaceDescriptor().bInterfaceNumber())
 				.getUsbInterfaceDescriptor().bAlternateSetting();
@@ -132,19 +123,12 @@ public class UsbInterface extends AUsbInterface
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @throws UsbException
+	 * @throws UsbNotActiveException
 	 */
 	@Override
 	public IUsbInterface getActiveSetting() throws UsbNotActiveException
 	{
-		try
-		{
-			checkActive();
-		}
-		catch (UsbException e)
-		{
-			throw new UsbNotActiveException(e.getLocalizedMessage());
-		}
+		checkActive();
 		return getUsbConfiguration().getUsbInterface(getUsbInterfaceDescriptor().bInterfaceNumber());
 	}
 
@@ -152,8 +136,7 @@ public class UsbInterface extends AUsbInterface
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String getInterfaceString() throws UsbException,
-			UnsupportedEncodingException
+	public String getInterfaceString() throws UsbException, UnsupportedEncodingException
 	{
 		checkConnected();
 		final byte iInterface = getUsbInterfaceDescriptor().iInterface();

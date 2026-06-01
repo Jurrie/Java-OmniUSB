@@ -22,28 +22,30 @@ package javax.usb3.exception;
  * Exception indicating a submission was aborted.
  * <p>
  * Submissions are normally aborted via the
- * {@link javax.usb.UsbPipe#abortAllSubmissions() abortAllSubmissions} method.
+ * {@link javax.usb3.IUsbPipe#abortAllSubmissions() abortAllSubmissions} method.
  *
  * @author Dan Streetman
  * @author Jesse Caulfield
  */
-public class UsbAbortException extends UsbException {
+public class UsbAbortException extends UsbException
+{
+	private static final long serialVersionUID = 1L;
 
-  private static final long serialVersionUID = 1L;
+	/**
+	 * Constructor.
+	 */
+	public UsbAbortException()
+	{
+		super();
+	}
 
-  /**
-   * Constructor.
-   */
-  public UsbAbortException() {
-    super();
-  }
-
-  /**
-   * Constructor.
-   *
-   * @param s The detail message.
-   */
-  public UsbAbortException(String s) {
-    super(s);
-  }
+	/**
+	 * Constructor.
+	 *
+	 * @param s The detail message.
+	 */
+	public UsbAbortException(final String s)
+	{
+		super(s);
+	}
 }

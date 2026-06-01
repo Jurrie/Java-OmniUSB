@@ -226,7 +226,7 @@ public enum EDescriptorType
 	 * cannot be directly accessed with a GetDescriptor() or SetDescriptor()
 	 * request.
 	 *
-	 * @see EBOSDeviceCapabilityType
+	 * @see EBosDeviceCapabilityType
 	 */
 	DEVICE_CAPABILITY((byte) 0x10, 4),
 	/**

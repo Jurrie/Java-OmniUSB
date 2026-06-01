@@ -25,7 +25,6 @@ package javax.usb3.exception;
  */
 public final class UsbDeviceNotFoundException extends RuntimeException
 {
-
 	/**
 	 * Serial version UID.
 	 */

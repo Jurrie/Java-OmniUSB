@@ -29,23 +29,25 @@ package javax.usb3.exception;
  * @author Dan Streetman
  * @author Jesse Caulfield
  */
-public class UsbDisconnectedException extends RuntimeException {
+public class UsbDisconnectedException extends RuntimeException
+{
+	private static final long serialVersionUID = 1L;
 
-  private static final long serialVersionUID = 1L;
+	/**
+	 * Constructor.
+	 */
+	public UsbDisconnectedException()
+	{
+		super();
+	}
 
-  /**
-   * Constructor.
-   */
-  public UsbDisconnectedException() {
-    super();
-  }
-
-  /**
-   * Constructor.
-   *
-   * @param s The detail message.
-   */
-  public UsbDisconnectedException(String s) {
-    super(s);
-  }
+	/**
+	 * Constructor.
+	 *
+	 * @param s The detail message.
+	 */
+	public UsbDisconnectedException(final String s)
+	{
+		super(s);
+	}
 }

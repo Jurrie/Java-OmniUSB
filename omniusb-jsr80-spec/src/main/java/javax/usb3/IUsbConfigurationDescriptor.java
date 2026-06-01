@@ -33,81 +33,82 @@ package javax.usb3;
  * @author Dan Streetman
  * @author Jesse Caulfield
  */
-public interface IUsbConfigurationDescriptor extends IUsbDescriptor {
+public interface IUsbConfigurationDescriptor extends IUsbDescriptor
+{
 
-  /**
-   * Total length of data returned for this configuration. Includes the combined
-   * length of all descriptors (configuration, interface, endpoint, and class-
-   * or vendor-specific) returned for this configuration.
-   *
-   * @return This descriptor's wTotalLength.
-   */
-  public short wTotalLength();
+	/**
+	 * Total length of data returned for this configuration. Includes the combined
+	 * length of all descriptors (configuration, interface, endpoint, and class-
+	 * or vendor-specific) returned for this configuration.
+	 *
+	 * @return This descriptor's wTotalLength.
+	 */
+	public short wTotalLength();
 
-  /**
-   * Number of interfaces supported by this configuration
-   *
-   * @return This descriptor's bNumInterfaces.
-   */
-  public byte bNumInterfaces();
+	/**
+	 * Number of interfaces supported by this configuration
+	 *
+	 * @return This descriptor's bNumInterfaces.
+	 */
+	public byte bNumInterfaces();
 
-  /**
-   * Value to use as an argument to the SetConfiguration() request to select
-   * this configuration
-   *
-   * @return This descriptor's bConfigurationValue.
-   */
-  public byte bConfigurationValue();
+	/**
+	 * Value to use as an argument to the SetConfiguration() request to select
+	 * this configuration
+	 *
+	 * @return This descriptor's bConfigurationValue.
+	 */
+	public byte bConfigurationValue();
 
-  /**
-   * Index of string descriptor describing this configuration
-   *
-   * @return This descriptor's iConfiguration.
-   */
-  public byte iConfiguration();
+	/**
+	 * Index of string descriptor describing this configuration
+	 *
+	 * @return This descriptor's iConfiguration.
+	 */
+	public byte iConfiguration();
 
-  /**
-   * Configuration characteristics. (Bitmap)
-   * <ul>
-   * <li> D7: Reserved (set to one) </li>
-   * <li> D6: Self-powered</li>
-   * <li> D5: Remote Wakeup</li>
-   * <li> D4...0: ReserReserved (reset to zero) </li>
-   * <ul>
-   * D7 is reserved and must be set to one for historical reasons.
-   * <p>
-   * A device configuration that uses power from the bus and a local source
-   * reports a non-zero value in bMaxPower to indicate the amount of bus power
-   * required and sets D6. The actual power source at runtime may be determined
-   * using the GetStatus(DEVICE) request (see Section 9.4.5).
-   * <p>
-   * If a device configuration supports remote wakeup, D5 is set to one.
-   *
-   * @return This descriptor's bmAttributes.
-   */
-  public byte bmAttributes();
+	/**
+	 * Configuration characteristics. (Bitmap)
+	 * <ul>
+	 * <li>D7: Reserved (set to one)</li>
+	 * <li>D6: Self-powered</li>
+	 * <li>D5: Remote Wakeup</li>
+	 * <li>D4...0: ReserReserved (reset to zero)</li>
+	 * </ul>
+	 * D7 is reserved and must be set to one for historical reasons.
+	 * <p>
+	 * A device configuration that uses power from the bus and a local source
+	 * reports a non-zero value in bMaxPower to indicate the amount of bus power
+	 * required and sets D6. The actual power source at runtime may be determined
+	 * using the GetStatus(DEVICE) request (see Section 9.4.5).
+	 * <p>
+	 * If a device configuration supports remote wakeup, D5 is set to one.
+	 *
+	 * @return This descriptor's bmAttributes.
+	 */
+	public byte bmAttributes();
 
-  /**
-   * Maximum power consumption of the USB device from the bus in this specific
-   * configuration when the device is fully operational. Expressed in 2 mA units
-   * (i.e., 50 = 100 mA).
-   * <p>
-   * Note: A device configuration reports whether the configuration is
-   * bus-powered or self- powered. Device status reports whether the device is
-   * currently self-powered. If a device is disconnected from its external power
-   * source, it updates device status to indicate that it is no longer
-   * self-powered.
-   * <p>
-   * A device may not increase its power draw from the bus, when it loses its
-   * external power source, beyond the amount reported by its configuration.
-   * <p>
-   * If a device can continue to operate when disconnected from its external
-   * power source, it continues to do so. If the device cannot continue to
-   * operate, it fails operations it can no longer support. The USB System
-   * Software may determine the cause of the failure by checking the status and
-   * noting the loss of the device’s power source.
-   *
-   * @return This descriptor's bMaxPower in units of 2mA. This is unsigned.
-   */
-  public byte bMaxPower();
+	/**
+	 * Maximum power consumption of the USB device from the bus in this specific
+	 * configuration when the device is fully operational. Expressed in 2 mA units
+	 * (i.e., 50 = 100 mA).
+	 * <p>
+	 * Note: A device configuration reports whether the configuration is
+	 * bus-powered or self- powered. Device status reports whether the device is
+	 * currently self-powered. If a device is disconnected from its external power
+	 * source, it updates device status to indicate that it is no longer
+	 * self-powered.
+	 * <p>
+	 * A device may not increase its power draw from the bus, when it loses its
+	 * external power source, beyond the amount reported by its configuration.
+	 * <p>
+	 * If a device can continue to operate when disconnected from its external
+	 * power source, it continues to do so. If the device cannot continue to
+	 * operate, it fails operations it can no longer support. The USB System
+	 * Software may determine the cause of the failure by checking the status and
+	 * noting the loss of the device’s power source.
+	 *
+	 * @return This descriptor's bMaxPower in units of 2mA. This is unsigned.
+	 */
+	public byte bMaxPower();
 }

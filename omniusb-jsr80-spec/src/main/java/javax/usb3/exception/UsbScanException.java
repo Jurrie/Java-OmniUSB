@@ -23,20 +23,21 @@ package javax.usb3.exception;
  * @author Klaus Reimer
  * @author Jesse Caulfield
  */
-public final class UsbScanException extends RuntimeException {
+public final class UsbScanException extends RuntimeException
+{
+	/**
+	 * Serial version UID.
+	 */
+	private static final long serialVersionUID = 1L;
 
-  /**
-   * Serial version UID.
-   */
-  private static final long serialVersionUID = 1L;
-
-  /**
-   * Constructor.
-   *
-   * @param message The error message.
-   * @param cause   The root cause.
-   */
-  public UsbScanException(final String message, final Throwable cause) {
-    super(message, cause);
-  }
+	/**
+	 * Constructor.
+	 *
+	 * @param message The error message.
+	 * @param cause The root cause.
+	 */
+	public UsbScanException(final String message, final Throwable cause)
+	{
+		super(message, cause);
+	}
 }

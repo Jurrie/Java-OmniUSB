@@ -62,34 +62,34 @@ import javax.usb3.enumerated.EDescriptorType;
  * be used to retrieve the descriptor from the device. A class or vendor
  * specification will define the appropriate way to retrieve these
  * descriptors.</li>
- * </ul>
+ * </ol>
  * <p>
  * See USB 2.0 section 9.5 Descriptors.
  *
  * @author Dan Streetman
  * @author Jesse Caulfield
  */
-public interface IUsbDescriptor {
+public interface IUsbDescriptor
+{
+	/**
+	 * Get the Size of this descriptor in bytes.
+	 *
+	 * @return Size of this descriptor in bytes
+	 */
+	public byte bLength();
 
-  /**
-   * Get the Size of this descriptor in bytes.
-   *
-   * @return Size of this descriptor in bytes
-   */
-  public byte bLength();
+	/**
+	 * Get the Standard USB descriptor definition enumerated type.
+	 *
+	 * @return the descriptor type
+	 */
+	public EDescriptorType descriptorType();
 
-  /**
-   * Get the Standard USB descriptor definition enumerated type.
-   *
-   * @return the descriptor type
-   */
-  public EDescriptorType descriptorType();
-
-  /**
-   * Get the the descriptor type byte value.
-   *
-   * @return The descriptor Type.
-   */
-  public byte bDescriptorType();
+	/**
+	 * Get the the descriptor type byte value.
+	 *
+	 * @return The descriptor Type.
+	 */
+	public byte bDescriptorType();
 
 }

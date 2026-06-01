@@ -31,9 +31,9 @@ import javax.usb3.exception.UsbNotOpenException;
  * Interface for a USB pipe.
  * <p>
  * See the USB 1.1 specification sec 5.3.2 for details on USB pipes. Data flows
- * in the {@link javax.usb.UsbEndpoint#getDirection() direction} defined by the
+ * in the {@link javax.usb3.IUsbEndpoint#getDirection() direction} defined by the
  * associated {@link #getUsbEndpoint() endpoint}, except for Control
- * {@link javax.usb.UsbEndpoint#getType() type} pipes.
+ * {@link javax.usb3.IUsbEndpoint#getType() type} pipes.
  * <p>
  * This pipe's configuration and interface setting must be active to use this
  * pipe. Any attempt to use a IUsbPipe belonging to an inactive configuration or
@@ -102,7 +102,6 @@ import javax.usb3.exception.UsbNotOpenException;
  */
 public interface IUsbPipe
 {
-
 	/**
 	 * Open this IUsbPipe.
 	 * <p>
@@ -143,8 +142,8 @@ public interface IUsbPipe
 	 * If this pipe is active.
 	 * <p>
 	 * This pipe is active only if it belongs to an
-	 * {@link javax.usb.UsbConfiguration#isActive() active configuration} and
-	 * {@link javax.usb.UsbInterface#isActive() interface setting}, otherwise it
+	 * {@link javax.usb3.IUsbConfiguration#isActive() active configuration} and
+	 * {@link javax.usb3.IUsbInterface#isActive() interface setting}, otherwise it
 	 * is inactive. This IUsbPipe cannot be used if inactive.
 	 *
 	 * @return If this IUsbPipe is active.
@@ -154,7 +153,7 @@ public interface IUsbPipe
 	/**
 	 * If this pipe is open.
 	 * <p>
-	 * This is true after a sucessful {@link #open() open} until a successful
+	 * This is true after a successful {@link #open() open} until a successful
 	 * {@link #close() close}.
 	 * <p>
 	 * If this pipe is not {@link #isActive() active}, this returns false.
@@ -178,7 +177,7 @@ public interface IUsbPipe
 	 * (queued) submissions. There is no maximum size restriction; the
 	 * implementation will segment the buffer into multiple transactions if
 	 * required. There may be a minimum size, but it will not be more than the
-	 * {@link javax.usb.UsbEndpointDescriptor#wMaxPacketSize() maximum packet size}.
+	 * {@link javax.usb3.IUsbEndpointDescriptor#wMaxPacketSize() maximum packet size}.
 	 * <p>
 	 * This will block until either all data is transferred or an error occurs.
 	 * Short packets indicate either the end of data or an error.
@@ -214,7 +213,7 @@ public interface IUsbPipe
 	 * (queued) submissions. There is no maximum size restriction; the
 	 * implementation will segment the buffer into multiple transactions if
 	 * required. There may be a minimum size, but it will not be more than the
-	 * {@link javax.usb.UsbEndpointDescriptor#wMaxPacketSize() maximum packet size}.
+	 * {@link javax.usb3.IUsbEndpointDescriptor#wMaxPacketSize() maximum packet size}.
 	 * <p>
 	 * The implementation should only place this on a queue, or perform whatever
 	 * minimal processing is required, and then return. This method will not block
@@ -247,12 +246,12 @@ public interface IUsbPipe
 	 * (queued) submissions. There is no maximum size restriction; the
 	 * implementation will segment the buffer into multiple transactions if
 	 * required. There may be a minimum size, but it will not be more than the
-	 * {@link javax.usb.UsbEndpointDescriptor#wMaxPacketSize() maximum packet size}.
+	 * {@link javax.usb3.IUsbEndpointDescriptor#wMaxPacketSize() maximum packet size}.
 	 * <p>
 	 * This will block until either all data is transferred or an error occurs.
 	 * Short packets indicate either the end of data or an error.
 	 * <p>
-	 * If this is a Control {@link javax.usb.UsbEndpoint#getType() type} pipe, the
+	 * If this is a Control {@link javax.usb3.IUsbEndpoint#getType() type} pipe, the
 	 * IUsbIrp must be a {@link javax.usb3.IUsbControlIrp IUsbControlIrp}.
 	 *
 	 * @param irp A IUsbIrp to use for the submission.
@@ -275,13 +274,13 @@ public interface IUsbPipe
 	 * (queued) submissions. There is no maximum size restriction; the
 	 * implementation will segment the buffer into multiple transactions if
 	 * required. There may be a minimum size, but it will not be more than the
-	 * {@link javax.usb.UsbEndpointDescriptor#wMaxPacketSize() maximum packet size}.
+	 * {@link javax.usb3.IUsbEndpointDescriptor#wMaxPacketSize() maximum packet size}.
 	 * <p>
 	 * The implementation should only place this on a queue, or perform whatever
 	 * minimal processing is required, and then return. This method will not block
 	 * until the submission is complete.
 	 * <p>
-	 * If this is a Control {@link javax.usb.UsbEndpoint#getType() type} pipe, the
+	 * If this is a Control {@link javax.usb3.IUsbEndpoint#getType() type} pipe, the
 	 * IUsbIrp must be a {@link javax.usb3.IUsbControlIrp IUsbControlIrp}.
 	 *
 	 * @param irp The IUsbIrp to use for the submission.
@@ -311,7 +310,7 @@ public interface IUsbPipe
 	 * all remaining IUsbIrps.</li>
 	 * </ul>
 	 * <p>
-	 * If this is a Control {@link javax.usb.UsbEndpoint#getType() type} pipe, the
+	 * If this is a Control {@link javax.usb3.IUsbEndpoint#getType() type} pipe, the
 	 * IUsbIrps must be {@link javax.usb3.IUsbControlIrp IUsbControlIrps}.
 	 *
 	 * @param list The List of IUsbIrps.
@@ -343,7 +342,7 @@ public interface IUsbPipe
 	 * remaining IUsbIrps.</li>
 	 * </ul>
 	 * <p>
-	 * If this is a Control {@link javax.usb.UsbEndpoint#getType() type} pipe, the
+	 * If this is a Control {@link javax.usb3.IUsbEndpoint#getType() type} pipe, the
 	 * IUsbIrps must be {@link javax.usb3.IUsbControlIrp IUsbControlIrps}.
 	 *
 	 * @param list The List of IUsbIrps.
@@ -395,11 +394,6 @@ public interface IUsbPipe
 	/**
 	 * Create a IUsbIrp.
 	 * <p>
-	 * This creates a IUsbIrp that may be optimized for use on this IUsbPipe.
-	 * Using this IUsbIrp instead of a
-	 * {@link javax.usb.util.DefaultUsbIrp DefaultIUsbIrp} may increase
-	 * performance or decrease memory requirements.
-	 * <p>
 	 * The IUsbPipe cannot require this IUsbIrp to be used, all submit methods
 	 * <i>must</i> accept any IUsbIrp implementation (or IUsbControlIrp
 	 * implementation if this is a Control-type IUsbPipe).
@@ -410,11 +404,6 @@ public interface IUsbPipe
 
 	/**
 	 * Create a IUsbControlIrp.
-	 * <p>
-	 * This creates a IUsbControlIrp that may be optimized for use on this
-	 * IUsbPipe. Using this IUsbControlIrp instead of a
-	 * {@link javax.usb.util.DefaultUsbControlIrp DefaultIUsbControlIrp} may
-	 * increase performance or decrease memory requirements.
 	 * <p>
 	 * The IUsbPipe cannot require this IUsbControlIrp to be used, all submit
 	 * methods <i>must</i> accept any IUsbControlIrp implementation.

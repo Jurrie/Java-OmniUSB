@@ -28,7 +28,7 @@ import javax.usb3.utility.ByteUtility;
  * class implements minimum required functionality for the UsbIrp interface.
  * <p>
  * The behavior and defaults follow those defined in the
- * {@link javax.usb.IUsbIrp interface}. Any of the fields may be updated if the
+ * {@link javax.usb3.IUsbIrp interface}. Any of the fields may be updated if the
  * default is not appropriate; in most cases the {@link #getData() data} will be
  * the only field that needs to be {@link #setData(byte[]) set}.
  *

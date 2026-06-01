@@ -216,7 +216,7 @@ public class UsbRootHub implements IUsbHub, IUsbPorts, IUsbDeviceWithId
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @return {@linkplain javax.usb.enumerated.EDevicePortSpeed#HIGH}
+	 * @return {@linkplain javax.usb3.enumerated.EDevicePortSpeed#HIGH}
 	 */
 	@Override
 	public EDevicePortSpeed getSpeed()

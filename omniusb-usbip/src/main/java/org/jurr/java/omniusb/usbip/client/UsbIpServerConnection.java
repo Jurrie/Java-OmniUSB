@@ -201,7 +201,7 @@ public class UsbIpServerConnection implements IUsbHub, IUsbPorts, IUsbDeviceWith
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @return {@linkplain javax.usb.enumerated.EDevicePortSpeed#HIGH}
+	 * @return {@linkplain javax.usb3.enumerated.EDevicePortSpeed#HIGH}
 	 */
 	@Override
 	public EDevicePortSpeed getSpeed()

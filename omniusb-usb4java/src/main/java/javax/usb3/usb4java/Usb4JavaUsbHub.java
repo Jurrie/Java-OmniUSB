@@ -42,9 +42,6 @@ import org.usb4java.LibUsb;
  * UsbHub implementation.
  * <p>
  * This must be set up before use and/or connection to the topology tree. To set
- * up, see {@link Usb4JavaUsbDevice documentation}. The number of ports may be set in
- * the constructor, or it will default to 1. The number of ports can be
- * dynamically {@link #resize(int) resized} if needed.
  * <p>
  * The port numbering is 1-based, not 0-based.
  * <p>

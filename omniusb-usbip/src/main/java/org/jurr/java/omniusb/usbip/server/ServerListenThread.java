@@ -25,7 +25,7 @@ public class ServerListenThread extends Thread
 	 * Utility method to create a ServerListenThread listening on a random port.
 	 *
 	 * @return a ServerListenThread listening on a random port.
-	 * @see {@link #getPort()} for the port number assigned.
+	 * @see #getPort()
 	 * @throws IOException
 	 */
 	public static ServerListenThread createWithRandomPort() throws IOException
@@ -37,7 +37,7 @@ public class ServerListenThread extends Thread
 	 * Utility method to create a ServerListenThread listening on the default USB/IP port.
 	 *
 	 * @return a ServerListenThread listening on the default USB/IP port (which is {@value #DEFAULT_PORT}).
-	 * @see {@link #DEFAULT_PORT}
+	 * @see #DEFAULT_PORT
 	 * @throws IOException
 	 */
 	public static ServerListenThread createWithDefaultPort() throws IOException
@@ -51,8 +51,8 @@ public class ServerListenThread extends Thread
 	 * The port may be 0 to get an ephemeral port. In that case, use {@link #getPort()} to get the assigned port.
 	 *
 	 * @param port the port to listen on
-	 * @see {@link #createWithRandomPort()}
-	 * @see {@link #createWithDefaultPort()}
+	 * @see #createWithRandomPort()
+	 * @see #createWithDefaultPort()
 	 * @throws IOException
 	 */
 	public ServerListenThread(final int port) throws IOException

@@ -19,31 +19,32 @@
 package javax.usb3.exception;
 
 /**
- * Exception indicating an operation was attempted on an null {@link javax.usb.UsbConfiguration#isActive() inactive UsbConfiguration},
- * {@link javax.usb.UsbInterface#isActive() inactive UsbInterface}, and/or
- * {@link javax.usb.UsbPipe#isActive() inactive UsbPipe}.
+ * Exception indicating an operation was attempted on an null {@link javax.usb3.IUsbConfiguration#isActive() inactive UsbConfiguration},
+ * {@link javax.usb3.IUsbInterface#isActive() inactive UsbInterface}, and/or
+ * {@link javax.usb3.IUsbPipe#isActive() inactive UsbPipe}.
  *
  * @author Dan Streetman
  * @author Jesse Caulfield
  */
-public class UsbNotActiveException extends RuntimeException {
+public class UsbNotActiveException extends RuntimeException
+{
+	private static final long serialVersionUID = 1L;
 
-  private static final long serialVersionUID = 1L;
+	/**
+	 * Constructor.
+	 */
+	public UsbNotActiveException()
+	{
+		super();
+	}
 
-  /**
-   * Constructor.
-   */
-  public UsbNotActiveException() {
-    super();
-  }
-
-  /**
-   * Constructor.
-   *
-   * @param s The detail message.
-   */
-  public UsbNotActiveException(String s) {
-    super(s);
-  }
-
+	/**
+	 * Constructor.
+	 *
+	 * @param s The detail message.
+	 */
+	public UsbNotActiveException(final String s)
+	{
+		super(s);
+	}
 }

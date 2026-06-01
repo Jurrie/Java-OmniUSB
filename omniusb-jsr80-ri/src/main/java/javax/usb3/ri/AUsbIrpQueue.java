@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * Developer note: The default operation of an IrpQueue is to support
  * Asynchronous operation (e.g. processUsbIrpQueue in a separate thread.) To
  * implement synchronous IRP queue handling implement a WAIT lock on the
- * {@link IUsbIrp.isComplete() isComplete} method IUsbIrp.isComplete().
+ * {@link IUsbIrp#isComplete() isComplete} method IUsbIrp.isComplete().
  *
  * @author Klaus Reimer
  * @author Jesse Caulfield
@@ -95,7 +95,6 @@ public abstract class AUsbIrpQueue<T extends IUsbIrp> implements AutoCloseable
 	 * Constructor.
 	 *
 	 * @param usbDevice The USB usbDevice. Must not be null.
-	 * @param usbEndpoint The USB endpoint. If NULL, this is the control endpoint.
 	 */
 	protected AUsbIrpQueue(final IUsbDevice usbDevice)
 	{

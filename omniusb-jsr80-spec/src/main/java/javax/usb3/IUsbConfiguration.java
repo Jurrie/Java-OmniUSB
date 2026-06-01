@@ -64,7 +64,7 @@ public interface IUsbConfiguration
 	 * active, so they have no active alternate settings. The IUsbInterfaces will
 	 * then be an implementation-dependent alternate setting IUsbInterface for
 	 * each interface. To get a specific alternate setting, use
-	 * {@link javax.usb.UsbInterface#getSetting(byte) IUsbInterface.getSetting(byte number)}.</li>
+	 * {@link javax.usb3.IUsbInterface#getSetting(byte) IUsbInterface.getSetting(byte number)}.</li>
 	 * </ul>
 	 *
 	 * @return All IUsbInterfaces for this configuration.
@@ -79,7 +79,7 @@ public interface IUsbConfiguration
 	 * {@link #isActive() active}. If this configuration is not active, the
 	 * returned interface setting will be an implementation-dependent alternate
 	 * setting. To get a specific alternate setting, use
-	 * {@link javax.usb.UsbInterface#getSetting(byte) IUsbInterface.getSetting(byte number)}.
+	 * {@link javax.usb3.IUsbInterface#getSetting(byte) IUsbInterface.getSetting(byte number)}.
 	 * <p>
 	 * If the specified IUsbInterface does not exist, this returns null.
 	 *

@@ -67,9 +67,8 @@ import javax.usb3.exception.UsbException;
  * Two major divisions of device classes exist: hubs and functions. Only hubs
  * have the ability to provide additional USB attachment points. Functions
  * provide additional capabilities to the host. In this library USB
- * {@code functions} are represented by {@linkplain #IUsbDevice} while Hubs are
- * represented by {@linkplain #IUsbHub}, which extends IUsbDevice.
- * <p>
+ * {@code functions} are represented by {@linkplain IUsbDevice} while Hubs are
+ * represented by {@linkplain IUsbHub}, which extends IUsbDevice.
  * <p>
  * Additionally, each USB device carries USB control and status information.
  *
@@ -158,11 +157,11 @@ public interface IUsbDevice extends Comparable<IUsbDevice>
 	 * <p>
 	 * The speed will be one of:
 	 * <ul>
-	 * <li>{@link javax.usb.enumerated.EDevicePortSpeed#UNKNOWN }</li>
-	 * <li>{@link javax.usb.enumerated.EDevicePortSpeed#LOW }</li>
-	 * <li>{@link javax.usb.enumerated.EDevicePortSpeed#FULL }</li>
-	 * <li>{@link javax.usb.enumerated.EDevicePortSpeed#HIGH }</li>
-	 * <li>{@link javax.usb.enumerated.EDevicePortSpeed#SUPER }</li>
+	 * <li>{@link javax.usb3.enumerated.EDevicePortSpeed#UNKNOWN }</li>
+	 * <li>{@link javax.usb3.enumerated.EDevicePortSpeed#LOW }</li>
+	 * <li>{@link javax.usb3.enumerated.EDevicePortSpeed#FULL }</li>
+	 * <li>{@link javax.usb3.enumerated.EDevicePortSpeed#HIGH }</li>
+	 * <li>{@link javax.usb3.enumerated.EDevicePortSpeed#SUPER }</li>
 	 * </ul>
 	 *
 	 * @return The speed of this device.
@@ -282,16 +281,12 @@ public interface IUsbDevice extends Comparable<IUsbDevice>
 	 * <p>
 	 * This is a convenience method, which uses
 	 * {@link #getUsbStringDescriptor(byte) getIUsbStringDescriptor()}.
-	 * {@link javax.usb.UsbStringDescriptor#getString() getString()}.
+	 * {@link javax.usb3.IUsbStringDescriptor#getString() getString()}.
 	 *
 	 * @param index The index of the string to get.
 	 * @return The specified String.
-	 * @exception UsbException If an error occurred while getting
-	 *                the String.
-	 * @exception UnsupportedEncodingException If the string encoding is not
-	 *                supported.
-	 * @exception UsbDisconnectedException If this device has been
-	 *                disconnected.
+	 * @exception UsbException If an error occurred while getting the String.
+	 * @exception UsbDisconnectedException If this device has been disconnected.
 	 */
 	public String getString(byte index) throws UsbException, UsbDisconnectedException;
 
@@ -369,11 +364,6 @@ public interface IUsbDevice extends Comparable<IUsbDevice>
 	/**
 	 * Create a IUsbControlIrp.
 	 * <p>
-	 * This creates a IUsbControlIrp that may be optimized for use on this
-	 * IUsbDevice. Using this UsbIrp instead of a
-	 * {@link javax.usb.util.DefaultUsbControlIrp DefaultIUsbControlIrp} may
-	 * increase performance or decrease memory requirements.
-	 * <p>
 	 * The IUsbDevice cannot require this IUsbControlIrp to be used, all submit
 	 * methods <i>must</i> accept any IUsbControlIrp implementation.
 	 * <p>
@@ -392,11 +382,6 @@ public interface IUsbDevice extends Comparable<IUsbDevice>
 
 	/**
 	 * Create a IUsbControlIrp.
-	 * <p>
-	 * This creates a IUsbControlIrp that may be optimized for use on this
-	 * IUsbDevice. Using this UsbIrp instead of a
-	 * {@link javax.usb.util.DefaultUsbControlIrp DefaultIUsbControlIrp} may
-	 * increase performance or decrease memory requirements.
 	 * <p>
 	 * The IUsbDevice cannot require this IUsbControlIrp to be used, all submit
 	 * methods <i>must</i> accept any IUsbControlIrp implementation.

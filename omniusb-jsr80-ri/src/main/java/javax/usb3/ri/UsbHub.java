@@ -29,9 +29,7 @@ import javax.usb3.exception.UsbPlatformException;
  * UsbHub implementation.
  * <p>
  * This must be set up before use and/or connection to the topology tree. To set
- * up, see {@link UsbDevice documentation}. The number of ports may be set in
- * the constructor, or it will default to 1. The number of ports can be
- * dynamically {@link #resize(int) resized} if needed.
+ * up, see {@link UsbDevice documentation}.
  * <p>
  * The port numbering is 1-based, not 0-based.
  * <p>
@@ -52,15 +50,10 @@ public abstract class UsbHub extends AUsbDevice implements IUsbHub, IUsbPorts
 	 * Constructs a new USB hub device. This creates a hub with a initial number
 	 * of ports.
 	 *
-	 * @param deviceManager The USB device manager which is responsible for this *
-	 *            device.
 	 * @param id THe device id. Must not be null.
 	 * @param parentId The parent id. may be null if this device has no
 	 *            parent.
 	 * @param speed The device speed.
-	 * @param device The libusb device. This reference is only valid during
-	 *            the constructor execution, so don't store it in a
-	 *            property or something like that.
 	 * @throws UsbPlatformException When device configuration could not be read.
 	 */
 	protected UsbHub(final UsbDeviceId id, final UsbDeviceId parentId, final int speed) throws UsbPlatformException

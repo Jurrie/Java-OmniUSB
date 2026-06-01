@@ -17,7 +17,6 @@
  */
 package javax.usb3.descriptor;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -87,11 +86,7 @@ public final class UsbStringDescriptor extends AUsbDescriptor implements IUsbStr
 	/**
 	 * Constructs a new string descriptor with the specified data.
 	 *
-	 * @param bLength The descriptor length.
-	 * @param bDescriptorType The descriptor type.
 	 * @param string The string.
-	 * @throws UnsupportedEncodingException When system does not support UTF-16LE
-	 *             encoding.
 	 */
 	public UsbStringDescriptor(final String string)
 	{

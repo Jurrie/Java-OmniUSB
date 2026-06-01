@@ -261,7 +261,6 @@ public enum EDeviceRequest
 	 * <p>
 	 * If this request is not supported, the device will respond with a Request
 	 * Error.
-	 * <p>
 	 */
 	SET_DESCRIPTOR((byte) 0x07),
 	/**

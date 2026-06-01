@@ -123,16 +123,11 @@ public abstract class AUsbDevice implements IUsbDeviceWithId, IUsbDevice
 	/**
 	 * Construct a new device.
 	 *
-	 * @param deviceManager The USB device deviceManager which is responsible for
-	 *            this device.
 	 * @param deviceId The device deviceId. Must not be null.
 	 * @param parentId The parent device deviceId. May be null if this device
 	 *            has no parent (Because it is a root device).
 	 * @param speed The device speed code. This is the native (OS)
 	 *            negotiated connection speed for the device.
-	 * @param device The libusb native device reference. This reference is
-	 *            only valdeviceId during the constructor execution, so
-	 *            don't store it in a property or something like that.
 	 * @throws UsbPlatformException When device configuration could not be
 	 *             read.
 	 * @throws IllegalArgumentException if the DeviceManager or DeviceId are null
@@ -450,7 +445,7 @@ public abstract class AUsbDevice implements IUsbDeviceWithId, IUsbDevice
 	protected abstract void doReleaseInterface(byte number) throws UsbException;
 
 	/**
-	 * @inherit.
+	 * {@inheritDoc}
 	 */
 	@Override
 	public final boolean isInterfaceClaimed(final byte number)

@@ -33,8 +33,7 @@ import java.util.Scanner;
  * types etc. It is used in various programs to display full human-readable
  * names instead of cryptic numeric codes.
  *
- * @see <a href="http://www.linux-usb.org/usb-ids.html">The USB ID
- *      Repository<a/>
+ * @see <a href="http://www.linux-usb.org/usb-ids.html">The USB ID Repository</a>
  * @author Jesse Caulfield
  */
 public class UsbRepositoryDatabase

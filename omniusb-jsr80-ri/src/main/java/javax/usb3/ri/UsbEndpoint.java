@@ -105,8 +105,8 @@ public abstract class UsbEndpoint implements IUsbEndpoint
 	 * address.
 	 *
 	 * @return This endpoint's direction.
-	 * @see javax.usb.enumerated.EEndpointDirection#DEVICE_TO_HOST
-	 * @see javax.usb.enumerated.EEndpointDirection#HOST_TO_DEVICE
+	 * @see javax.usb3.enumerated.EEndpointDirection#DEVICE_TO_HOST
+	 * @see javax.usb3.enumerated.EEndpointDirection#HOST_TO_DEVICE
 	 */
 	@Override
 	public EEndpointDirection getDirection()
@@ -120,10 +120,10 @@ public abstract class UsbEndpoint implements IUsbEndpoint
 	 * This is the logical AND of the and the endpoint descriptor's attributes.
 	 *
 	 * @return This endpoint type.
-	 * @see javax.usb.enumerated.EDataFlowtype#CONTROL
-	 * @see javax.usb.enumerated.EDataFlowtype#BULK
-	 * @see javax.usb.enumerated.EDataFlowtype#INTERRUPT
-	 * @see javax.usb.enumerated.EDataFlowtype#ISOCHRONOUS
+	 * @see javax.usb3.enumerated.EDataFlowtype#CONTROL
+	 * @see javax.usb3.enumerated.EDataFlowtype#BULK
+	 * @see javax.usb3.enumerated.EDataFlowtype#INTERRUPT
+	 * @see javax.usb3.enumerated.EDataFlowtype#ISOCHRONOUS
 	 */
 	@Override
 	public EDataFlowtype getType()

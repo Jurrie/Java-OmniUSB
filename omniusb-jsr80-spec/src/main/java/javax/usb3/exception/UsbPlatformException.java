@@ -29,112 +29,129 @@ package javax.usb3.exception;
  * @author Dan Streetman
  * @author Jesse Caulfield
  */
-public class UsbPlatformException extends UsbException {
+public class UsbPlatformException extends UsbException
+{
+	private static final long serialVersionUID = 1L;
 
-  private static final long serialVersionUID = 1L;
+	private final Exception platformException;
+	private final int errorCode;
 
-  private Exception platformException = null;
-  private int errorCode = 0;
+	/**
+	 * Constructor.
+	 */
+	public UsbPlatformException()
+	{
+		super();
+		platformException = null;
+		errorCode = 0;
+	}
 
-  /**
-   * Constructor.
-   */
-  public UsbPlatformException() {
-    super();
-  }
+	/**
+	 * Constructor.
+	 *
+	 * @param s The detail message.
+	 */
+	public UsbPlatformException(final String s)
+	{
+		super(s);
+		platformException = null;
+		errorCode = 0;
+	}
 
-  /**
-   * Constructor.
-   *
-   * @param s The detail message.
-   */
-  public UsbPlatformException(String s) {
-    super(s);
-  }
+	/**
+	 * Constructor.
+	 *
+	 * @param e The error code.
+	 */
+	public UsbPlatformException(final int e)
+	{
+		super();
+		platformException = null;
+		errorCode = e;
+	}
 
-  /**
-   * Constructor.
-   *
-   * @param e The error code.
-   */
-  public UsbPlatformException(int e) {
-    super();
-    errorCode = e;
-  }
+	/**
+	 * Constructor.
+	 *
+	 * @param pE The platform Exception.
+	 */
+	public UsbPlatformException(final Exception pE)
+	{
+		super();
+		platformException = pE;
+		errorCode = 0;
+	}
 
-  /**
-   * Constructor.
-   *
-   * @param pE The platform Exception.
-   */
-  public UsbPlatformException(Exception pE) {
-    super();
-    platformException = pE;
-  }
+	/**
+	 * Constructor.
+	 *
+	 * @param s The detail message.
+	 * @param e The error code.
+	 */
+	public UsbPlatformException(final String s, final int e)
+	{
+		super(s);
+		platformException = null;
+		errorCode = e;
+	}
 
-  /**
-   * Constructor.
-   *
-   * @param s The detail message.
-   * @param e The error code.
-   */
-  public UsbPlatformException(String s, int e) {
-    super(s);
-    errorCode = e;
-  }
+	/**
+	 * Constructor.
+	 *
+	 * @param s The detail message.
+	 * @param pE The platform Exception.
+	 */
+	public UsbPlatformException(final String s, final Exception pE)
+	{
+		super(s);
+		platformException = pE;
+		errorCode = 0;
+	}
 
-  /**
-   * Constructor.
-   *
-   * @param s  The detail message.
-   * @param pE The platform Exception.
-   */
-  public UsbPlatformException(String s, Exception pE) {
-    super(s);
-    platformException = pE;
-  }
+	/**
+	 * Constructor.
+	 *
+	 * @param e The error code.
+	 * @param pE The platform Exception.
+	 */
+	public UsbPlatformException(final int e, final Exception pE)
+	{
+		super();
+		platformException = pE;
+		errorCode = e;
+	}
 
-  /**
-   * Constructor.
-   *
-   * @param e  The error code.
-   * @param pE The platform Exception.
-   */
-  public UsbPlatformException(int e, Exception pE) {
-    super();
-    errorCode = e;
-    platformException = pE;
-  }
+	/**
+	 * Constructor.
+	 *
+	 * @param s The detail message.
+	 * @param e The error code.
+	 * @param pE The platform Exception.
+	 */
+	public UsbPlatformException(final String s, final int e, final Exception pE)
+	{
+		super(s);
+		platformException = pE;
+		errorCode = e;
+	}
 
-  /**
-   * Constructor.
-   *
-   * @param s  The detail message.
-   * @param e  The error code.
-   * @param pE The platform Exception.
-   */
-  public UsbPlatformException(String s, int e, Exception pE) {
-    super(s);
-    errorCode = e;
-    platformException = pE;
-  }
+	/**
+	 * Get the platform Exception.
+	 *
+	 * @return The platform Exception, or null.
+	 */
+	public Exception getPlatformException()
+	{
+		return platformException;
+	}
 
-  /**
-   * Get the platform Exception.
-   *
-   * @return The platform Exception, or null.
-   */
-  public Exception getPlatformException() {
-    return platformException;
-  }
-
-  /**
-   * Get the platform error code.
-   *
-   * @return The platform error code.
-   */
-  public int getErrorCode() {
-    return errorCode;
-  }
-
+	/**
+	 * Get the platform error code.
+	 *
+	 * @return The platform error code.
+	 */
+	public int getErrorCode()
+	{
+		return errorCode;
+	}
 }

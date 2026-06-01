@@ -19,6 +19,7 @@
 package javax.usb3.ri;
 
 import javax.usb3.IUsbDevice;
+import javax.usb3.IUsbHub;
 
 /**
  * Interface for a USB device.
@@ -59,9 +60,8 @@ import javax.usb3.IUsbDevice;
  * Two major divisions of device classes exist: hubs and functions. Only hubs
  * have the ability to provide additional USB attachment points. Functions
  * provide additional capabilities to the host. In this library USB
- * {@code functions} are represented by {@linkplain #IUsbDevice} while Hubs are
- * represented by {@linkplain #IUsbHub}, which extends IUsbDevice.
- * <p>
+ * {@code functions} are represented by {@linkplain IUsbDevice} while Hubs are
+ * represented by {@linkplain IUsbHub}, which extends IUsbDevice.
  * <p>
  * Additionally, each USB device carries USB control and status information.
  *

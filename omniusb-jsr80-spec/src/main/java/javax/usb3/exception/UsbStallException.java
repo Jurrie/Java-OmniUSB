@@ -26,23 +26,25 @@ package javax.usb3.exception;
  * @author Dan Streetman
  * @author Jesse Caulfield
  */
-public class UsbStallException extends UsbException {
+public class UsbStallException extends UsbException
+{
+	private static final long serialVersionUID = 1L;
 
-  private static final long serialVersionUID = 1L;
+	/**
+	 * Constructor.
+	 */
+	public UsbStallException()
+	{
+		super();
+	}
 
-  /**
-   * Constructor.
-   */
-  public UsbStallException() {
-    super();
-  }
-
-  /**
-   * Constructor.
-   *
-   * @param s The detail message.
-   */
-  public UsbStallException(String s) {
-    super(s);
-  }
+	/**
+	 * Constructor.
+	 *
+	 * @param s The detail message.
+	 */
+	public UsbStallException(final String s)
+	{
+		super(s);
+	}
 }

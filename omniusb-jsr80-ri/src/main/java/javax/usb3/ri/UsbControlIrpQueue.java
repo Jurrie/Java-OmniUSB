@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * Developer note: The default operation of an IrpQueue is to support
  * Asynchronous operation (e.g. processUsbIrpQueue in a separate thread.) To
  * implement synchronous IRP queue handling implement a WAIT lock on the
- * {@link IUsbIrp.isComplete() isComplete} method IUsbIrp.isComplete().
+ * {@link IUsbIrp#isComplete() isComplete} method IUsbIrp.isComplete().
  *
  * @author Klaus Reimer
  * @author Jesse Caulfield

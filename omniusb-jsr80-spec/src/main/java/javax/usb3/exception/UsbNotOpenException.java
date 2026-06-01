@@ -20,29 +20,30 @@ package javax.usb3.exception;
 
 /**
  * Exception indicating an operation was attempted on a
- * {@link javax.usb.UsbPipe#isOpen() closed UsbPipe}.
+ * {@link javax.usb3.IUsbPipe#isOpen() closed UsbPipe}.
  *
  * @author Dan Streetman
  * @author Jesse Caulfield
  */
-public class UsbNotOpenException extends RuntimeException {
+public class UsbNotOpenException extends RuntimeException
+{
+	private static final long serialVersionUID = 1L;
 
-  private static final long serialVersionUID = 1L;
+	/**
+	 * Constructor.
+	 */
+	public UsbNotOpenException()
+	{
+		super();
+	}
 
-  /**
-   * Constructor.
-   */
-  public UsbNotOpenException() {
-    super();
-  }
-
-  /**
-   * Constructor.
-   *
-   * @param s The detail message.
-   */
-  public UsbNotOpenException(String s) {
-    super(s);
-  }
-
+	/**
+	 * Constructor.
+	 *
+	 * @param s The detail message.
+	 */
+	public UsbNotOpenException(final String s)
+	{
+		super(s);
+	}
 }

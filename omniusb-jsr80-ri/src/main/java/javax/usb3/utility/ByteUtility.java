@@ -1023,7 +1023,7 @@ public class ByteUtility
 
 	/**
 	 * Format a byte array to a printable String with spaces. This is a shortcut
-	 * to {@link #toString(byte[], true)}
+	 * to {@link #toString(byte[], boolean) toString(byte[], true)}
 	 *
 	 * @param bytes an array of bytes
 	 * @return a (potentially very long) non-null String

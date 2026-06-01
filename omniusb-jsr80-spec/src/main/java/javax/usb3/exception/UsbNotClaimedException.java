@@ -20,29 +20,30 @@ package javax.usb3.exception;
 
 /**
  * Exception indicating an operation was attempted on a
- * {@link javax.usb.UsbInterface#isClaimed() unclaimed UsbInterface}.
+ * {@link javax.usb3.IUsbInterface#isClaimed() unclaimed UsbInterface}.
  *
  * @author Dan Streetman
  * @author Jesse Caulfield
  */
-public class UsbNotClaimedException extends RuntimeException {
+public class UsbNotClaimedException extends RuntimeException
+{
+	private static final long serialVersionUID = 1L;
 
-  private static final long serialVersionUID = 1L;
+	/**
+	 * Constructor.
+	 */
+	public UsbNotClaimedException()
+	{
+		super();
+	}
 
-  /**
-   * Constructor.
-   */
-  public UsbNotClaimedException() {
-    super();
-  }
-
-  /**
-   * Constructor.
-   *
-   * @param s The detail message.
-   */
-  public UsbNotClaimedException(String s) {
-    super(s);
-  }
-
+	/**
+	 * Constructor.
+	 *
+	 * @param s The detail message.
+	 */
+	public UsbNotClaimedException(final String s)
+	{
+		super(s);
+	}
 }

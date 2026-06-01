@@ -108,7 +108,7 @@ public interface IUsbInterface extends Comparable<IUsbInterface>
 	 * This will attempt whatever claiming the native implementation provides, if
 	 * any. If the native claim fails, this will fail. If the interface is already
 	 * claimed, this may fail depending on the value of the
-	 * {@link javax.usb.UsbInterfacePolicy#forceClaim(UsbInterface) IIUsbInterfacePolicy.forceClaim()}.
+	 * {@link javax.usb3.IUsbInterfacePolicy#forceClaim(UsbInterface) IIUsbInterfacePolicy.forceClaim()}.
 	 *
 	 * @param policy The IIUsbInterfacePolicy to use.
 	 * @exception UsbClaimException If the interface is already claimed.
@@ -155,7 +155,7 @@ public interface IUsbInterface extends Comparable<IUsbInterface>
 	 * If this interface alternate setting is active.
 	 * <p>
 	 * The interface itself is active if and only if its parent configuration is
-	 * {@link javax.usb.UsbConfiguration#isActive() active}. If the interface
+	 * {@link javax.usb3.IUsbConfiguration#isActive() active}. If the interface
 	 * itself is not active, none of its alternate settings are active.
 	 *
 	 * @return if this interface alternate setting is active.

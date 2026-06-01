@@ -20,8 +20,7 @@ package javax.usb3.ri;
 import javax.usb3.exception.UsbPlatformException;
 
 /**
- * A basic (non-hub) USB device implementation. USB devices present a standard
- * USB interface.
+ * A basic (non-hub) USB device implementation. USB devices present a standard USB interface.
  *
  * @author Klaus Reimer
  * @author Jesse Caulfield
@@ -31,26 +30,18 @@ public abstract class UsbDevice extends AUsbDevice
 	/**
 	 * Constructs a new (non-hub) USB device.
 	 *
-	 * @param deviceManager The USB device manager which is responsible for this *
-	 *            device.
 	 * @param deviceId The device id. Must not be null.
 	 * @param parentId The parent device id. May be null if this device has
 	 *            no parent (Because it is a root device).
 	 * @param speed The device USB port speed.
-	 * @param device The libusb native device reference. This reference is
-	 *            only valid during the constructor execution, so don't
-	 *            store it in a property or something like that.
 	 * @throws UsbPlatformException When device configuration could not be read.
 	 */
-	public UsbDevice(/* final UsbDeviceManager deviceManager, */
+	protected UsbDevice(
 			final UsbDeviceId deviceId,
 			final UsbDeviceId parentId,
-			final int speed/*
-							 * ,
-							 * final Device device
-							 */) throws UsbPlatformException
+			final int speed) throws UsbPlatformException
 	{
-		super(/* deviceManager, */ deviceId, parentId, speed/* , device */);
+		super(deviceId, parentId, speed);
 	}
 
 	/**

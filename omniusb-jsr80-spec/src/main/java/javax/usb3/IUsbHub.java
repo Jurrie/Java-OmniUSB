@@ -27,65 +27,66 @@ import java.util.Collection;
  * @author Jesse Caulfield
  * @author E. Michael Maximilien
  */
-public interface IUsbHub extends IUsbDevice {
+public interface IUsbHub extends IUsbDevice
+{
 
-  /**
-   * Get the number of (downstream) ports this hub has.
-   * <p>
-   * This is only the number of ports on the hub, not all ports are necessarily
-   * enabled, available, usable, or in some cases physically present. This only
-   * represents the number of downstream ports the hub claims to have. Note that
-   * all hubs have exactly one upstream port, which allows it to connect to the
-   * system (or another upstream hub). There is also a internal port which is
-   * generally only used by the hub itself. See the USB 1.1 specification sec
-   * 11.4 for details on the internal port, sec 11.5 for details on the
-   * downstream ports, and sec 11.6 for details on the upstream port.
-   *
-   * @return The number of (downstream) ports for this hub.
-   */
-  public byte getNumberOfPorts();
+	/**
+	 * Get the number of (downstream) ports this hub has.
+	 * <p>
+	 * This is only the number of ports on the hub, not all ports are necessarily
+	 * enabled, available, usable, or in some cases physically present. This only
+	 * represents the number of downstream ports the hub claims to have. Note that
+	 * all hubs have exactly one upstream port, which allows it to connect to the
+	 * system (or another upstream hub). There is also a internal port which is
+	 * generally only used by the hub itself. See the USB 1.1 specification sec
+	 * 11.4 for details on the internal port, sec 11.5 for details on the
+	 * downstream ports, and sec 11.6 for details on the upstream port.
+	 *
+	 * @return The number of (downstream) ports for this hub.
+	 */
+	public byte getNumberOfPorts();
 
-  /**
-   * Get all the ports this hub has.
-   * <p>
-   * The port numbering is 1-based.
-   * <p>
-   * The List will be unmodifiable.
-   *
-   * @return All ports this hub has.
-   * @see #getUsbPort( byte number )
-   */
-  public Collection<IUsbPort> getUsbPorts();
+	/**
+	 * Get all the ports this hub has.
+	 * <p>
+	 * The port numbering is 1-based.
+	 * <p>
+	 * The List will be unmodifiable.
+	 *
+	 * @return All ports this hub has.
+	 * @see #getUsbPort( byte number )
+	 */
+	public Collection<IUsbPort> getUsbPorts();
 
-  /**
-   * Get a specific IUsbPort by port number.
-   * <p>
-   * This gets the IUsbPort with the specified number. The port numbering is
-   * 1-based (not 0-based), and the max port number is 255. See the USB 1.1
-   * specification table 11.8 offset 7.
-   * <p>
-   * If the specified port does not exist, this returns null.
-   *
-   * @param number The number (1-based) of the port to get.
-   * @return The specified port, or null.
-   */
-  public IUsbPort getUsbPort(byte number);
+	/**
+	 * Get a specific IUsbPort by port number.
+	 * <p>
+	 * This gets the IUsbPort with the specified number. The port numbering is
+	 * 1-based (not 0-based), and the max port number is 255. See the USB 1.1
+	 * specification table 11.8 offset 7.
+	 * <p>
+	 * If the specified port does not exist, this returns null.
+	 *
+	 * @param number The number (1-based) of the port to get.
+	 * @return The specified port, or null.
+	 */
+	public IUsbPort getUsbPort(byte number);
 
-  /**
-   * Get all attached IUsbDevices.
-   * <p>
-   * The List will be unmodifiable.
-   *
-   * @return All devices currently attached to this hub.
-   */
-  public Collection<IUsbDevice> getAttachedUsbDevices();
+	/**
+	 * Get all attached IUsbDevices.
+	 * <p>
+	 * The List will be unmodifiable.
+	 *
+	 * @return All devices currently attached to this hub.
+	 */
+	public Collection<IUsbDevice> getAttachedUsbDevices();
 
-  /**
-   * Test whether this is the
-   * {@linkplain javax.usb.UsbServices#getRootUsbHub() virtual root hub}.
-   *
-   * @return TRUE if this is the virtual root hub.
-   */
-  public boolean isRootUsbHub();
+	/**
+	 * Test whether this is the
+	 * {@linkplain javax.usb3.IUsbServices#getRootUsbHub() virtual root hub}.
+	 *
+	 * @return TRUE if this is the virtual root hub.
+	 */
+	public boolean isRootUsbHub();
 
 }

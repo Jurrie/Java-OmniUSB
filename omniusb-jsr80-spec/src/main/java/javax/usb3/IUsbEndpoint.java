@@ -89,7 +89,6 @@ import javax.usb3.enumerated.EEndpointDirection;
  */
 public interface IUsbEndpoint extends Comparable<IUsbEndpoint>
 {
-
 	/**
 	 * Get the parent IUsbInterface that this IUsbEndpoint belongs to.
 	 *
@@ -118,8 +117,8 @@ public interface IUsbEndpoint extends Comparable<IUsbEndpoint>
 	 * descriptor's address.
 	 *
 	 * @return This endpoint direction.
-	 * @see javax.usb.enumerated.EEndpointDirection#DEVICE_TO_HOST
-	 * @see javax.usb.enumerated.EEndpointDirection#HOST_TO_DEVICE
+	 * @see javax.usb3.enumerated.EEndpointDirection#DEVICE_TO_HOST
+	 * @see javax.usb3.enumerated.EEndpointDirection#HOST_TO_DEVICE
 	 */
 	public EEndpointDirection getDirection();
 
@@ -130,10 +129,10 @@ public interface IUsbEndpoint extends Comparable<IUsbEndpoint>
 	 * attributes.
 	 *
 	 * @return This endpoint type.
-	 * @see javax.usb.enumerated.EDataFlowtype#CONTROL
-	 * @see javax.usb.enumerated.EDataFlowtype#BULK
-	 * @see javax.usb.enumerated.EDataFlowtype#INTERRUPT
-	 * @see javax.usb.enumerated.EDataFlowtype#ISOCHRONOUS
+	 * @see javax.usb3.enumerated.EDataFlowtype#CONTROL
+	 * @see javax.usb3.enumerated.EDataFlowtype#BULK
+	 * @see javax.usb3.enumerated.EDataFlowtype#INTERRUPT
+	 * @see javax.usb3.enumerated.EDataFlowtype#ISOCHRONOUS
 	 */
 	public EDataFlowtype getType();
 
