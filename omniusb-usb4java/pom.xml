@@ -1,0 +1,50 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.jurr.java.omniusb</groupId>
+		<artifactId>omniusb-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>omniusb-usb4java</artifactId>
+
+	<name>Java OmniUSB → USB4Java bridge</name>
+	<description>A bridge between JSR-80 and USB4Java allowing communication with USB devices on all platforms that USB4Java supports</description>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.usb4java</groupId>
+				<artifactId>usb4java</artifactId>
+				<version>1.3.0</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.jurr.java.omniusb</groupId>
+			<artifactId>omniusb-jsr80-spec</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jurr.java.omniusb</groupId>
+			<artifactId>omniusb-jsr80-ri</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.usb4java</groupId>
+			<artifactId>usb4java</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.code.findbugs</groupId>
+			<artifactId>jsr305</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+		</dependency>
+	</dependencies>
+</project>

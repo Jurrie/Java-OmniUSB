@@ -1,0 +1,154 @@
+/*
+ * Copyright (C) 2011 Klaus Reimer
+ * Copyright (C) 2014 Jesse Caulfield
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package javax.usb3.ri;
+
+import java.util.List;
+
+import javax.usb3.IUsbDevice;
+import javax.usb3.IUsbHub;
+import javax.usb3.IUsbPort;
+import javax.usb3.IUsbPorts;
+import javax.usb3.exception.UsbPlatformException;
+
+/**
+ * UsbHub implementation.
+ * <p>
+ * This must be set up before use and/or connection to the topology tree. To set
+ * up, see {@link UsbDevice documentation}. The number of ports may be set in
+ * the constructor, or it will default to 1. The number of ports can be
+ * dynamically {@link #resize(int) resized} if needed.
+ * <p>
+ * The port numbering is 1-based, not 0-based.
+ * <p>
+ * Hubs are a type of USB device that provide additional attachment points to
+ * the USB.
+ *
+ * @author Klaus Reimer
+ * @author Jesse Caulfield
+ */
+public abstract class UsbHub extends AUsbDevice implements IUsbHub, IUsbPorts
+{
+	/**
+	 * The hub ports.
+	 */
+	private final UsbPorts ports = new UsbPorts(this);
+
+	/**
+	 * Constructs a new USB hub device. This creates a hub with a initial number
+	 * of ports.
+	 *
+	 * @param deviceManager The USB device manager which is responsible for this *
+	 *            device.
+	 * @param id THe device id. Must not be null.
+	 * @param parentId The parent id. may be null if this device has no
+	 *            parent.
+	 * @param speed The device speed.
+	 * @param device The libusb device. This reference is only valid during
+	 *            the constructor execution, so don't store it in a
+	 *            property or something like that.
+	 * @throws UsbPlatformException When device configuration could not be read.
+	 */
+	protected UsbHub(final UsbDeviceId id, final UsbDeviceId parentId, final int speed) throws UsbPlatformException
+	{
+		super(id, parentId, speed);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public byte getNumberOfPorts()
+	{
+		return ports.getNumberOfPorts();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<IUsbPort> getUsbPorts()
+	{
+		return ports.getUsbPorts();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public IUsbPort getUsbPort(final byte number)
+	{
+		return ports.getUsbPort(number);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<IUsbDevice> getAttachedUsbDevices()
+	{
+		return ports.getAttachedUsbDevices();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isUsbDeviceAttached(final IUsbDevice device)
+	{
+		return ports.isUsbDeviceAttached(device);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isRootUsbHub()
+	{
+		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void connectUsbDevice(final IUsbDevice device)
+	{
+		ports.connectUsbDevice(device);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void disconnectUsbDevice(final IUsbDevice device)
+	{
+		ports.disconnectUsbDevice(device);
+	}
+
+	/**
+	 * TRUE. USB4Java UsbHub instances are always UsbHubs. If the device is not a
+	 * hub it will be identified as a UsbDevice implementation.
+	 *
+	 * @return TRUE
+	 */
+	@Override
+	public boolean isUsbHub()
+	{
+		return true;
+	}
+}
