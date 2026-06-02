@@ -6,7 +6,7 @@ The platforms supported are:
 - Android (no requirement for root)
 - Windows / Linux / Mac OS X (all platforms that USB4Java supports)
 
-It also supports USB/IP, so you can do USB over TCP (for example: access a USB device over the Internet). Currently there is support for the server side of USB/IP. Client side is not yet finished.
+It also supports [USB/IP](https://wiki.archlinux.org/title/USB/IP), so you can do USB over TCP (for example: access a USB device over the Internet). Currently there is support for the server side of USB/IP. Client side is not yet finished.
 
 There is also support for writing your own USB devices completely in Java. And since USB/IP is supported, you can connect your Java USB device directly to your operating system! See the 'omniusb-mock-tests' module for examples.
 
@@ -91,8 +91,8 @@ In the `omniusb-mock-tests` module there are two pure Java mock devices created:
 - A USB mouse doing figure-eights
 - A USB memory stick
 
-Both can be attached to your system using USB/IP.
-If you run Linux, you can simply run the `org.jurr.java.omniusb.mock.UsbIpServer` class (or alternatively `java -jar omniusb-usb4java-<version>.jar`). It's a console application.
+Both can be attached to your system using [USB/IP](https://wiki.archlinux.org/title/USB/IP).
+If you run Linux, you can simply run the `org.jurr.java.omniusb.mock.UsbIpServer` class (or alternatively download the [omniusb-mock-tests-<version>.jar from Central](https://central.sonatype.com/artifact/org.jurr.java.omniusb/omniusb-mock-tests/versions) and run  `java -jar omniusb-mock-tests-<version>.jar`). It's a console application.
 Pressing 'm' + 'enter' will attach the mock mouse to your kernel.
 Pressing 's' + 'enter' will attach the mock memory stick.
 Note that attaching devices using USB/IP requires root. You'll be prompted for your sudo password.
