@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -72,9 +73,11 @@ public class ServerConnectionThread extends Thread
 
 	private boolean shouldExit;
 
-	protected ServerConnectionThread(final Socket clientSocket)
+	protected ServerConnectionThread(final Socket clientSocket) throws SocketException
 	{
 		this.clientSocket = clientSocket;
+		this.clientSocket.setTcpNoDelay(true);
+
 		attachedDevices = new HashMap<>();
 		interfacesClaimed = new ArrayList<>();
 		pipesOpened = new ArrayList<>();

@@ -2,6 +2,7 @@ package org.jurr.java.omniusb.mock;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.net.InetSocketAddress;
 import java.util.Scanner;
 
 import javax.usb3.ri.UsbDeviceId;
@@ -32,7 +33,7 @@ public class UsbIpServer
 	public UsbIpServer(final int port) throws IOException
 	{
 		this.port = port;
-		serverThread = new ServerListenThread(port);
+		serverThread = new ServerListenThread(new InetSocketAddress(port));
 	}
 
 	public void start() throws IOException

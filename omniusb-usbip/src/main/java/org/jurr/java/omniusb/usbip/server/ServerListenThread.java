@@ -2,6 +2,7 @@ package org.jurr.java.omniusb.usbip.server;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class ServerListenThread extends Thread
 	 */
 	public static ServerListenThread createWithRandomPort() throws IOException
 	{
-		return new ServerListenThread(0);
+		return new ServerListenThread(new InetSocketAddress(0));
 	}
 
 	/**
@@ -42,7 +43,7 @@ public class ServerListenThread extends Thread
 	 */
 	public static ServerListenThread createWithDefaultPort() throws IOException
 	{
-		return new ServerListenThread(DEFAULT_PORT);
+		return new ServerListenThread(new InetSocketAddress(DEFAULT_PORT));
 	}
 
 	/**
@@ -55,9 +56,12 @@ public class ServerListenThread extends Thread
 	 * @see #createWithDefaultPort()
 	 * @throws IOException
 	 */
-	public ServerListenThread(final int port) throws IOException
+	public ServerListenThread(final InetSocketAddress listenAddress) throws IOException
 	{
-		serverSocket = new ServerSocket(port);
+		serverSocket = new ServerSocket();
+		serverSocket.setReuseAddress(true);
+		serverSocket.bind(listenAddress);
+
 		clientThreads = new ArrayList<>();
 		shouldExit = false;
 	}
