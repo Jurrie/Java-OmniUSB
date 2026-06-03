@@ -302,7 +302,7 @@ public class AUsbIrp implements IUsbIrp
 	@Override
 	public void setUsbException(final UsbException exception)
 	{
-		if (usbException != null)
+		if (usbException != null || isComplete())
 		{
 			return;
 		}

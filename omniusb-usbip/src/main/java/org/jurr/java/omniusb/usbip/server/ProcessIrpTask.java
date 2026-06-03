@@ -69,6 +69,7 @@ class ProcessIrpTask implements Runnable
 		Thread.currentThread().setName("Future task for Client " + clientSocket.getInetAddress() + " #" + getSeqNum());
 		try
 		{
+			LOGGER.debug("Client {} #{}: Submitting IRP...", clientSocket.getInetAddress(), getSeqNum());
 			if (irp instanceof IUsbControlIrp controlIrp)
 			{
 				device.asyncSubmit(controlIrp);
@@ -77,11 +78,13 @@ class ProcessIrpTask implements Runnable
 			{
 				pipe.asyncSubmit(irp);
 			}
+			LOGGER.debug("Client {} #{}: Waiting for IRP to complete...", clientSocket.getInetAddress(), getSeqNum());
 
 			while (!irp.isComplete())
 			{
 				irp.waitUntilComplete();
 			}
+			LOGGER.debug("Client {} #{}: IRP is complete, preparing UsbIpSubmitResponse...", clientSocket.getInetAddress(), getSeqNum());
 
 			synchronized (irp)
 			{
@@ -108,6 +111,7 @@ class ProcessIrpTask implements Runnable
 				}
 				else
 				{
+					LOGGER.debug("Client {} #{}: IRP completed successfully, actual length {}", clientSocket.getInetAddress(), getSeqNum(), irp.getActualLength());
 					usbIpSubmitResponse = UsbIpSubmitResponse.successResponse(getSeqNum(), irp.getActualLength(), header.getEEndpointDirection() == EEndpointDirection.DEVICE_TO_HOST ? irp.getData() : null, irp.getIsochronousPackets());
 				}
 				clientSocket.getOutputStream().write(usbIpSubmitResponse.toBuffer());

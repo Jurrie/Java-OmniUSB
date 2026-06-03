@@ -13,14 +13,11 @@ import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.net.Socket;
 import java.net.SocketException;
+import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import javax.usb3.IUsbConfiguration;
 import javax.usb3.IUsbControlIrp;
@@ -68,8 +65,10 @@ public class ServerConnectionThread extends Thread
 	private final Map<Integer, IUsbDeviceWithId> attachedDevices;
 	private final List<IUsbInterface> interfacesClaimed;
 	private final List<IUsbPipe> pipesOpened;
-	private final Map<Integer, ProcessIrpTask> irpsInQueue;
-	private final ExecutorService irpExecutorService = Executors.newCachedThreadPool();
+	// private final Map<Integer, ProcessIrpTask> irpsInQueue;
+	// private final Map<IUsbEndpoint, BlockingQueue<ProcessIrpTask>> usbIrpQueue = new HashMap<>();// = new ArrayBlockingQueue<>(10);
+	// private final ExecutorService irpExecutorService = Executors.newCachedThreadPool();
+	private Map<IUsbEndpoint, EndpointIrpProcessorThread> usbIrpQueueProcessorThread;
 
 	private boolean shouldExit;
 
@@ -81,10 +80,35 @@ public class ServerConnectionThread extends Thread
 		attachedDevices = new HashMap<>();
 		interfacesClaimed = new ArrayList<>();
 		pipesOpened = new ArrayList<>();
-		irpsInQueue = Collections.synchronizedMap(new HashMap<>());
+
+		// irpsInQueue = Collections.synchronizedMap(new HashMap<>());
+
+		// usbIrpQueueProcessorThread = new Thread(this::processUsbIrpQueue, "IRP Queue Processor for control endpoint 0");
+		// usbIrpQueueProcessorThread.setDaemon(true);
+		// usbIrpQueueProcessorThread.start();
+
+		usbIrpQueueProcessorThread = new HashMap<>();
 
 		LOGGER.info("Client {} connected", clientSocket.getInetAddress());
 	}
+
+	// private void processUsbIrpQueue()
+	// {
+	// while (!shouldExit)
+	// {
+	// try
+	// {
+	// irpCurrentlyProcessing = usbIrpQueue.take();
+	// LOGGER.debug("Client {} #{}: processing IRP from queue", clientSocket.getInetAddress(), irpCurrentlyProcessing.getSeqNum());
+	// irpCurrentlyProcessing.run();
+	// irpCurrentlyProcessing = null;
+	// }
+	// catch (InterruptedException e)
+	// {
+	// Thread.currentThread().interrupt();
+	// }
+	// }
+	// }
 
 	public void stopExecuting() throws IOException
 	{
@@ -97,10 +121,17 @@ public class ServerConnectionThread extends Thread
 
 		shouldExit = true;
 
-		for (ProcessIrpTask task : irpsInQueue.values())
+		// for (ProcessIrpTask task : irpsInQueue.values())
+		// {
+		// LOGGER.info("Client {}: stopping task #{}", clientSocket.getInetAddress(), task.getSeqNum());
+		// task.shutdown();
+		// }
+
+		// usbIrpQueue.clear();
+
+		for (EndpointIrpProcessorThread thread : usbIrpQueueProcessorThread.values())
 		{
-			LOGGER.info("Client {}: stopping task #{}", clientSocket.getInetAddress(), task.getSeqNum());
-			task.shutdown();
+			thread.stopExecuting();
 		}
 
 		clientSocket.close();
@@ -137,8 +168,15 @@ public class ServerConnectionThread extends Thread
 
 		try
 		{
-			irpExecutorService.shutdownNow();
-			irpExecutorService.awaitTermination(3, TimeUnit.SECONDS);
+			// irpExecutorService.shutdownNow();
+			// irpExecutorService.awaitTermination(3, TimeUnit.SECONDS);
+
+			// usbIrpQueueProcessorThread.join(Duration.ofSeconds(3));
+
+			for (EndpointIrpProcessorThread thread : usbIrpQueueProcessorThread.values())
+			{
+				thread.join(Duration.ofSeconds(3));
+			}
 		}
 		catch (InterruptedException e)
 		{
@@ -220,6 +258,21 @@ public class ServerConnectionThread extends Thread
 		}
 	}
 
+	/**
+	 * @param usbEndpoint Can be NULL for control endpoint 0
+	 */
+	private EndpointIrpProcessorThread getOrCreateEndpointIrpProcessorThread(final IUsbEndpoint usbEndpoint)
+	{
+		EndpointIrpProcessorThread thread = usbIrpQueueProcessorThread.get(usbEndpoint);
+		if (thread == null)
+		{
+			thread = new EndpointIrpProcessorThread(clientSocket, usbEndpoint);
+			thread.start();
+			usbIrpQueueProcessorThread.put(usbEndpoint, thread);
+		}
+		return thread;
+	}
+
 	private void doUrbSubmitCommand(final UsbIpSubmitCommand command) throws IOException, IllegalArgumentException, UsbDisconnectedException, UsbException
 	{
 		final UsbIpHeaderBasic usbIpHeaderBasic = command.getUsbIpHeaderBasic();
@@ -282,11 +335,21 @@ public class ServerConnectionThread extends Thread
 				@Override
 				public void onComplete()
 				{
-					irpsInQueue.remove(getSeqNum());
+					LOGGER.debug("Client {} #{}: control IRP processing complete", clientSocket.getInetAddress(), getSeqNum());
+					// irpsInQueue.remove(getSeqNum());
 				}
 			};
-			irpsInQueue.put(task.getSeqNum(), task);
-			irpExecutorService.submit(task);
+			// irpsInQueue.put(task.getSeqNum(), task);
+			// irpExecutorService.submit(task);
+			try
+			{
+				getOrCreateEndpointIrpProcessorThread(null).addIrpToQueue(task);
+			}
+			catch (InterruptedException e)
+			{
+				final UsbIpSubmitResponse errorResponse = UsbIpSubmitResponse.errorResponse(task.getSeqNum(), -1, 1);
+				clientSocket.getOutputStream().write(errorResponse.toBuffer());
+			}
 		}
 		else
 		{
@@ -323,11 +386,22 @@ public class ServerConnectionThread extends Thread
 				@Override
 				public void onComplete()
 				{
-					irpsInQueue.remove(getSeqNum());
+					LOGGER.debug("Client {} #{}: completed processing URB on endpoint {}", clientSocket.getInetAddress(), getSeqNum(), usbIpHeaderBasic.getBEndpointAddress().getEndPointNumber());
+					// irpsInQueue.remove(getSeqNum());
 				}
 			};
-			irpsInQueue.put(task.getSeqNum(), task);
-			irpExecutorService.submit(task);
+			// irpsInQueue.put(task.getSeqNum(), task);
+			// irpExecutorService.submit(task);
+			try
+			{
+				getOrCreateEndpointIrpProcessorThread(usbEndpoint).addIrpToQueue(task);
+				LOGGER.debug("Client {} #{}: queued URB for processing on endpoint {}", clientSocket.getInetAddress(), usbIpHeaderBasic.getSeqNum(), usbIpHeaderBasic.getBEndpointAddress().getEndPointNumber());
+			}
+			catch (InterruptedException e)
+			{
+				final UsbIpSubmitResponse errorResponse = UsbIpSubmitResponse.errorResponse(task.getSeqNum(), -1, 1);
+				clientSocket.getOutputStream().write(errorResponse.toBuffer());
+			}
 		}
 	}
 
@@ -357,16 +431,23 @@ public class ServerConnectionThread extends Thread
 		}
 		else
 		{
-			final ProcessIrpTask irpToAbort = irpsInQueue.remove(seqNumToUnlink);
-			if (irpToAbort == null)
+			final IUsbEndpoint usbEndpoint = usbDevice.getActiveUsbConfiguration().getUsbEndpoint(usbIpHeaderBasic.getBEndpointAddress().getByteCode());
+			final EndpointIrpProcessorThread endpointIrpProcessorThread = usbIrpQueueProcessorThread.get(usbEndpoint);
+			if (endpointIrpProcessorThread == null)
 			{
-				LOGGER.error("Client {} #{}: unlink requested for non-existing URB with seqNum {}", clientSocket.getInetAddress(), usbIpHeaderBasic.getSeqNum(), seqNumToUnlink);
+				LOGGER.debug("Client {} #{}: unlink requested for URB with seqNum {} on endpoint {}, but endpoint thread was NULL", clientSocket.getInetAddress(), usbIpHeaderBasic.getSeqNum(), seqNumToUnlink, usbIpHeaderBasic.getBEndpointAddress().getEndPointNumber());
+				final UsbIpUnlinkResponse usbIpUnlinkResponse = UsbIpUnlinkResponse.errorResponse(usbIpHeaderBasic.getSeqNum());
+				clientSocket.getOutputStream().write(usbIpUnlinkResponse.toBuffer());
+			}
+			else if (!endpointIrpProcessorThread.abort(usbIpHeaderBasic, seqNumToUnlink))
+			{
+				LOGGER.error("Client {} #{}: unlink requested for non-existing exURB with seqNum {}", clientSocket.getInetAddress(), usbIpHeaderBasic.getSeqNum(), seqNumToUnlink);
 				final UsbIpUnlinkResponse usbIpUnlinkResponse = UsbIpUnlinkResponse.errorResponse(usbIpHeaderBasic.getSeqNum());
 				clientSocket.getOutputStream().write(usbIpUnlinkResponse.toBuffer());
 			}
 			else
 			{
-				irpToAbort.abort(usbIpHeaderBasic.getSeqNum());
+				// All ok
 			}
 		}
 	}
