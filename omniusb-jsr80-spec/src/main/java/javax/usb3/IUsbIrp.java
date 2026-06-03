@@ -74,211 +74,217 @@ import javax.usb3.exception.UsbException;
  * @author Dan Streetman
  * @author Jesse Caulfield
  */
-public interface IUsbIrp {
+public interface IUsbIrp
+{
+	/**
+	 * Get the data. The UsbIrp data buffer is simply a byte[] array.
+	 * <p>
+	 * This defaults to an empty byte[]. This will never be null.
+	 *
+	 * @return The data. A non-null byte[] array.
+	 */
+	public byte[] getData();
 
-  /**
-   * Get the data. The UsbIrp data buffer is simply a byte[] array.
-   * <p>
-   * This defaults to an empty byte[]. This will never be null.
-   *
-   * @return The data. A non-null byte[] array.
-   */
-  public byte[] getData();
+	/**
+	 * Set the data.
+	 * <p>
+	 * This {@link #setOffset(int) sets the offset} to 0, and
+	 * {@link #setLength(int) sets the length} to data.length; if those values are
+	 * inappropriate, use the {@link #setData(byte[],int,int) other setData}.
+	 *
+	 * @param data The data.
+	 * @exception IllegalArgumentException If the data is null.
+	 */
+	public void setData(byte[] data);
 
-  /**
-   * Set the data.
-   * <p>
-   * This {@link #setOffset(int) sets the offset} to 0, and
-   * {@link #setLength(int) sets the length} to data.length; if those values are
-   * inappropriate, use the {@link #setData(byte[],int,int) other setData}.
-   *
-   * @param data The data.
-   * @exception IllegalArgumentException If the data is null.
-   */
-  public void setData(byte[] data);
+	/**
+	 * Set the data.
+	 * <p>
+	 * This sets the data, offset, and length to the specified values.
+	 *
+	 * @param data The data.
+	 * @param offset The offset. Indicates what offset into the data buffer the
+	 *            implementation should use when transferring data. If the
+	 *            offset is zero, data will be transferred starting at the
+	 *            beginning of the byte[], if the offset is above zero, data
+	 *            starting at the offset into the byte[] will be used when
+	 *            communicating with the device.
+	 * @param length The length of data to transfer with the device.
+	 * @exception IllegalArgumentException If the data is null, or offset and/or
+	 *                length is negative.
+	 */
+	public void setData(byte[] data, int offset, int length);
 
-  /**
-   * Set the data.
-   * <p>
-   * This sets the data, offset, and length to the specified values.
-   *
-   * @param data   The data.
-   * @param offset The offset. Indicates what offset into the data buffer the
-   *               implementation should use when transferring data. If the
-   *               offset is zero, data will be transferred starting at the
-   *               beginning of the byte[], if the offset is above zero, data
-   *               starting at the offset into the byte[] will be used when
-   *               communicating with the device.
-   * @param length The length of data to transfer with the device.
-   * @exception IllegalArgumentException If the data is null, or offset and/or
-   *                                     length is negative.
-   */
-  public void setData(byte[] data, int offset, int length);
+	/**
+	 * Get the starting offset of the data.
+	 * <p>
+	 * This indicates the starting byte in the data, or what offset into the data
+	 * buffer the implementation should use when transferring data. If the offset
+	 * is zero, data will be transferred starting at the beginning of the byte[],
+	 * if the offset is above zero, data starting at the offset into the byte[]
+	 * will be used when communicating with the device.
+	 * <p>
+	 * This defaults to 0, and this is set to 0 by
+	 * {@link #setData(byte[]) the 1-parameter setData}. This will never be
+	 * negative.
+	 *
+	 * @return The offset.
+	 */
+	public int getOffset();
 
-  /**
-   * Get the starting offset of the data.
-   * <p>
-   * This indicates the starting byte in the data, or what offset into the data
-   * buffer the implementation should use when transferring data. If the offset
-   * is zero, data will be transferred starting at the beginning of the byte[],
-   * if the offset is above zero, data starting at the offset into the byte[]
-   * will be used when communicating with the device.
-   * <p>
-   * This defaults to 0, and this is set to 0 by
-   * {@link #setData(byte[]) the 1-parameter setData}. This will never be
-   * negative.
-   *
-   * @return The offset.
-   */
-  public int getOffset();
+	/**
+	 * The amount of data to transfer.
+	 * <p>
+	 * This indicates the amount of data to transfer.
+	 * <p>
+	 * This defaults to 0, and this is set to data.length by
+	 * {@link #setData(byte[]) the 1-parameter setData}. This will never be
+	 * negative.
+	 *
+	 * @return The amount of data to transfer.
+	 */
+	public int getLength();
 
-  /**
-   * The amount of data to transfer.
-   * <p>
-   * This indicates the amount of data to transfer.
-   * <p>
-   * This defaults to 0, and this is set to data.length by
-   * {@link #setData(byte[]) the 1-parameter setData}. This will never be
-   * negative.
-   *
-   * @return The amount of data to transfer.
-   */
-  public int getLength();
+	/**
+	 * Set the amount of data to transfer.
+	 *
+	 * @param length The amount of data to transfer.
+	 * @exception IllegalArgumentException If the length is negative.
+	 */
+	public void setLength(int length);
 
-  /**
-   * Set the amount of data to transfer.
-   *
-   * @param length The amount of data to transfer.
-   * @exception IllegalArgumentException If the length is negative.
-   */
-  public void setLength(int length);
+	/**
+	 * Set the offset.
+	 *
+	 * @param offset The offset.
+	 * @exception IllegalArgumentException If the offset is negative.
+	 */
+	public void setOffset(int offset);
 
-  /**
-   * Set the offset.
-   *
-   * @param offset The offset.
-   * @exception IllegalArgumentException If the offset is negative.
-   */
-  public void setOffset(int offset);
+	/**
+	 * The amount of data that was transferred.
+	 * <p>
+	 * This defaults to 0, and is set by the implementation during/after
+	 * submission (if successful). This will never be negative. If
+	 * {@link #isUsbException() isUsbException} is true, this value is undefined.
+	 *
+	 * @return The amount of data that was transferred.
+	 */
+	public int getActualLength();
 
-  /**
-   * The amount of data that was transferred.
-   * <p>
-   * This defaults to 0, and is set by the implementation during/after
-   * submission (if successful). This will never be negative. If
-   * {@link #isUsbException() isUsbException} is true, this value is undefined.
-   *
-   * @return The amount of data that was transferred.
-   */
-  public int getActualLength();
+	/**
+	 * Set the amount of data that was transferred.
+	 * <p>
+	 * The implementation will set this to the amount of data actually
+	 * transferred. The implementation will set this before calling
+	 * {@link #complete() complete}, regardless of whether the submission was
+	 * successful or not.
+	 *
+	 * @param length The amount of data that was transferred.
+	 * @exception IllegalArgumentException If the length is negative.
+	 */
+	public void setActualLength(int length);
 
-  /**
-   * Set the amount of data that was transferred.
-   * <p>
-   * The implementation will set this to the amount of data actually
-   * transferred. The implementation will set this before calling
-   * {@link #complete() complete}, regardless of whether the submission was
-   * successful or not.
-   *
-   * @param length The amount of data that was transferred.
-   * @exception IllegalArgumentException If the length is negative.
-   */
-  public void setActualLength(int length);
+	/**
+	 * If a UsbException occured.
+	 * <p>
+	 * If this is true, the {@link #getActualLength() actual length} is undefined.
+	 *
+	 * @return If a UsbException occurred.
+	 */
+	public boolean isUsbException();
 
-  /**
-   * If a UsbException occured.
-   * <p>
-   * If this is true, the {@link #getActualLength() actual length} is undefined.
-   *
-   * @return If a UsbException occurred.
-   */
-  public boolean isUsbException();
+	/**
+	 * Get the UsbException.
+	 * <p>
+	 * If no UsbException occurred, this returns null.
+	 *
+	 * @return The UsbException, or null.
+	 */
+	public UsbException getUsbException();
 
-  /**
-   * Get the UsbException.
-   * <p>
-   * If no UsbException occurred, this returns null.
-   *
-   * @return The UsbException, or null.
-   */
-  public UsbException getUsbException();
+	/**
+	 * Set the UsbException.
+	 *
+	 * @param usbException The UsbException.
+	 */
+	public void setUsbException(UsbException usbException);
 
-  /**
-   * Set the UsbException.
-   *
-   * @param usbException The UsbException.
-   */
-  public void setUsbException(UsbException usbException);
+	/**
+	 * If short packets should be accepted.
+	 * <p>
+	 * See the USB 1.1 specification sec 5.3.2 for details on short packets and
+	 * short packet detection. If short packets are accepted (true), a short
+	 * packet indicates the end of data. If short packets are not accepted
+	 * (false), a short packet will generate an UsbException. The default is true.
+	 *
+	 * @return If short packects should be accepted.
+	 */
+	public boolean getAcceptShortPacket();
 
-  /**
-   * If short packets should be accepted.
-   * <p>
-   * See the USB 1.1 specification sec 5.3.2 for details on short packets and
-   * short packet detection. If short packets are accepted (true), a short
-   * packet indicates the end of data. If short packets are not accepted
-   * (false), a short packet will generate an UsbException. The default is true.
-   *
-   * @return If short packects should be accepted.
-   */
-  public boolean getAcceptShortPacket();
+	/**
+	 * Set if short packets should be accepted. Sets the policy either accept or
+	 * reject short packets.
+	 * <p>
+	 * This should be set by the application.
+	 *
+	 * @param accept If short packets should be accepted.
+	 */
+	public void setAcceptShortPacket(boolean accept);
 
-  /**
-   * Set if short packets should be accepted. Sets the policy either accept or
-   * reject short packets.
-   * <p>
-   * This should be set by the application.
-   *
-   * @param accept If short packets should be accepted.
-   */
-  public void setAcceptShortPacket(boolean accept);
+	public int getNumberOfIsochronousPackets();
 
-  /**
-   * If this has completed.
-   * <p>
-   * This must be false before use.
-   *
-   * @return If this IUsbIrp has completed.
-   */
-  public boolean isComplete();
+	public IUsbIrpIsoPacket[] getIsochronousPackets();
 
-  /**
-   * Set this as complete or not.
-   * <p>
-   * This is what {@link #isComplete() isComplete} returns.
-   *
-   * @param complete If this is complete or not.
-   */
-  public void setComplete(boolean complete);
+	public void setIsochronousPackets(IUsbIrpIsoPacket[] isoPackets);
 
-  /**
-   * Set this as complete.
-   * <p>
-   * This is the last method the implementation calls; it indicates the IUsbIrp
-   * has completed. The implementation will
-   * {@link #setActualLength(int) set the actual length}, even if the submission
-   * was unsuccessful, before calling this. The implementation will
-   * {@link #setUsbException(UsbException) set the UsbException}, if
-   * appropriate, before calling this.
-   * <p>
-   * After calling this {@link #isComplete() isComplete} will return true.
-   */
-  public void complete();
+	/**
+	 * If this has completed.
+	 * <p>
+	 * This must be false before use.
+	 *
+	 * @return If this IUsbIrp has completed.
+	 */
+	public boolean isComplete();
 
-  /**
-   * Wait until {@link #isComplete() complete}.
-   * <p>
-   * This will block until this is {@link #isComplete() complete}.
-   */
-  public void waitUntilComplete();
+	/**
+	 * Set this as complete or not.
+	 * <p>
+	 * This is what {@link #isComplete() isComplete} returns.
+	 *
+	 * @param complete If this is complete or not.
+	 */
+	public void setComplete(boolean complete);
 
-  /**
-   * Wait until {@link #isComplete() complete}, or the timeout has expired.
-   * <p>
-   * This will block until this is {@link #isComplete() complete}, or the
-   * timeout has expired. The timeout is ignored if it is 0 or less, i.e. this
-   * will behave as the {@link #waitUntilComplete() no-timeout method}.
-   *
-   * @param timeout The maximum number of milliseconds to wait.
-   */
-  public void waitUntilComplete(long timeout);
+	/**
+	 * Set this as complete.
+	 * <p>
+	 * This is the last method the implementation calls; it indicates the IUsbIrp
+	 * has completed. The implementation will
+	 * {@link #setActualLength(int) set the actual length}, even if the submission
+	 * was unsuccessful, before calling this. The implementation will
+	 * {@link #setUsbException(UsbException) set the UsbException}, if
+	 * appropriate, before calling this.
+	 * <p>
+	 * After calling this {@link #isComplete() isComplete} will return true.
+	 */
+	public void complete();
+
+	/**
+	 * Wait until {@link #isComplete() complete}.
+	 * <p>
+	 * This will block until this is {@link #isComplete() complete}.
+	 */
+	public void waitUntilComplete();
+
+	/**
+	 * Wait until {@link #isComplete() complete}, or the timeout has expired.
+	 * <p>
+	 * This will block until this is {@link #isComplete() complete}, or the
+	 * timeout has expired. The timeout is ignored if it is 0 or less, i.e. this
+	 * will behave as the {@link #waitUntilComplete() no-timeout method}.
+	 *
+	 * @param timeout The maximum number of milliseconds to wait.
+	 */
+	public void waitUntilComplete(long timeout);
 }

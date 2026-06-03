@@ -108,7 +108,7 @@ class ProcessIrpTask implements Runnable
 				}
 				else
 				{
-					usbIpSubmitResponse = UsbIpSubmitResponse.successResponse(getSeqNum(), irp.getActualLength(), header.getEEndpointDirection() == EEndpointDirection.DEVICE_TO_HOST ? irp.getData() : null);
+					usbIpSubmitResponse = UsbIpSubmitResponse.successResponse(getSeqNum(), irp.getActualLength(), header.getEEndpointDirection() == EEndpointDirection.DEVICE_TO_HOST ? irp.getData() : null, irp.getIsochronousPackets());
 				}
 				clientSocket.getOutputStream().write(usbIpSubmitResponse.toBuffer());
 			}

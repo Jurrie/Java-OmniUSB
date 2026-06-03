@@ -88,7 +88,12 @@ public class UsbInterface extends AUsbInterface
 	@Override
 	public void claim(final IUsbInterfacePolicy policy) throws UsbException
 	{
-		checkActive();
+		// checkActive();
+		if (!getUsbConfiguration().isActive())
+		{
+			throw new UsbNotActiveException("Configuration is not active");
+		}
+		// TODO: checkActive() did also do isActive() check... It can't be done since we first need to claim the interface... Hmmz...
 		checkConnected();
 		final AUsbDevice device = (AUsbDevice) getUsbConfiguration().getUsbDevice();
 		device.claimInterface(getUsbInterfaceDescriptor().bInterfaceNumber(), policy != null && policy.forceClaim(this));

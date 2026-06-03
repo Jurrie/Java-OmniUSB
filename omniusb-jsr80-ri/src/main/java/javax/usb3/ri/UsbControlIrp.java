@@ -19,6 +19,7 @@
 package javax.usb3.ri;
 
 import javax.usb3.IUsbControlIrp;
+import javax.usb3.IUsbIrpIsoPacket;
 import javax.usb3.request.BMRequestType;
 import javax.usb3.request.BRequest;
 import javax.usb3.utility.ByteUtility;
@@ -196,6 +197,24 @@ public class UsbControlIrp extends AUsbIrp implements IUsbControlIrp
 	public short wLength()
 	{
 		return (short) getLength();
+	}
+
+	@Override
+	public int getNumberOfIsochronousPackets()
+	{
+		return 0;
+	}
+
+	@Override
+	public IUsbIrpIsoPacket[] getIsochronousPackets()
+	{
+		return new IUsbIrpIsoPacket[0];
+	}
+
+	@Override
+	public void setIsochronousPackets(final IUsbIrpIsoPacket[] isoPackets)
+	{
+		throw new UnsupportedOperationException("Control IRPs do not support isochronous packets.");
 	}
 
 	/**

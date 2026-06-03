@@ -19,6 +19,7 @@
 package javax.usb3.ri;
 
 import javax.usb3.IUsbIrp;
+import javax.usb3.IUsbIrpIsoPacket;
 import javax.usb3.exception.UsbException;
 import javax.usb3.exception.UsbShortPacketException;
 import javax.usb3.utility.ByteUtility;
@@ -102,6 +103,8 @@ public class AUsbIrp implements IUsbIrp
 	 * Internal lock object used for a synchronized read/write transaction.
 	 */
 	private final Object waitLock = new Object();
+
+	private IUsbIrpIsoPacket[] isoPackets = new IUsbIrpIsoPacket[0];
 
 	/**
 	 * Empty constructor. The data array must be set before use.
@@ -331,6 +334,24 @@ public class AUsbIrp implements IUsbIrp
 	public final void setAcceptShortPacket(boolean accept)
 	{
 		acceptShortPacket = accept;
+	}
+
+	@Override
+	public int getNumberOfIsochronousPackets()
+	{
+		return isoPackets.length;
+	}
+
+	@Override
+	public IUsbIrpIsoPacket[] getIsochronousPackets()
+	{
+		return isoPackets;
+	}
+
+	@Override
+	public void setIsochronousPackets(final IUsbIrpIsoPacket[] isoPackets)
+	{
+		this.isoPackets = isoPackets;
 	}
 
 	/**

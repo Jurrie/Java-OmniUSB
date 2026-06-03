@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import javax.usb3.IUsbConfiguration;
 import javax.usb3.IUsbControlIrp;
 import javax.usb3.IUsbDevice;
 import javax.usb3.IUsbEndpoint;
@@ -28,10 +29,15 @@ import javax.usb3.IUsbHub;
 import javax.usb3.IUsbInterface;
 import javax.usb3.IUsbPipe;
 import javax.usb3.UsbHostManager;
+import javax.usb3.enumerated.EDeviceRequest;
 import javax.usb3.exception.UsbDisconnectedException;
 import javax.usb3.exception.UsbException;
 import javax.usb3.exception.UsbNotActiveException;
 import javax.usb3.exception.UsbNotOpenException;
+import javax.usb3.request.BMRequestType;
+import javax.usb3.request.BMRequestType.ERecipient;
+import javax.usb3.request.BMRequestType.EType;
+import javax.usb3.request.BRequest;
 import javax.usb3.ri.IUsbDeviceWithId;
 import javax.usb3.ri.UsbIrp;
 
@@ -229,6 +235,45 @@ public class ServerConnectionThread extends Thread
 		{
 			final IUsbControlIrp controlIrp = fromSetupPacket(usbDevice, command.getSetupPacket(), command.getTransferBuffer());
 
+			// TODO: Check for 'setAltInt', claim before, handle after
+
+			final BMRequestType bmRequestType = command.getSetupPacket().getBmRequestType();
+			final BRequest request = command.getSetupPacket().getBRequest();
+
+			if (bmRequestType.getType() == EType.STANDARD && bmRequestType.getRecipient() == ERecipient.INTERFACE && request.getDeviceRequest() == EDeviceRequest.SET_INTERFACE)
+			{
+				// Special handling for SET_INTERFACE to update the active setting in the UsbInterface
+				final byte interfaceNumber = (byte) (controlIrp.wIndex() & 0xFF);
+				final int alternateSetting = controlIrp.wValue() & 0xFF;
+
+				LOGGER.debug("Processing SET_INTERFACE request - interface number: {}, alternate setting: {}", interfaceNumber, alternateSetting);
+
+				final IUsbConfiguration activeUsbConfiguration = usbDevice.getActiveUsbConfiguration();
+				final Map<Integer, IUsbInterface> settings = activeUsbConfiguration.getSettings(interfaceNumber);
+				final IUsbInterface iUsbInterface = settings.get(alternateSetting);
+				LOGGER.debug("Found interface for alternate setting {}: {}", alternateSetting, iUsbInterface);
+
+				if (!interfacesClaimed.stream().anyMatch(i -> i.getUsbInterfaceDescriptor().bInterfaceNumber() == iUsbInterface.getUsbInterfaceDescriptor().bInterfaceNumber()))
+				{
+					LOGGER.debug("Client {} #{}: claiming interface {}", clientSocket.getInetAddress(), usbIpHeaderBasic.getSeqNum(), iUsbInterface.getUsbInterfaceDescriptor().bInterfaceNumber());
+					iUsbInterface.claim();
+					interfacesClaimed.add(iUsbInterface);
+					LOGGER.debug("Client {} #{}: interface {} claimed", clientSocket.getInetAddress(), usbIpHeaderBasic.getSeqNum(), iUsbInterface.getUsbInterfaceDescriptor().bInterfaceNumber());
+				}
+
+				try
+				{
+					activeUsbConfiguration.setUsbInterface(interfaceNumber, iUsbInterface);
+				}
+				catch (UsbException e)
+				{
+					LOGGER.error("Error setting alternate interface {} for interface number {}", alternateSetting, interfaceNumber, e);
+					controlIrp.setUsbException(e);
+				}
+
+				LOGGER.debug("SET_INTERFACE request - set interface number {} to alternate setting {}", interfaceNumber, alternateSetting);
+			}
+
 			final ProcessIrpTask task = new ProcessIrpTask(usbIpHeaderBasic, clientSocket, usbDevice, controlIrp)
 			{
 				@Override
@@ -243,11 +288,12 @@ public class ServerConnectionThread extends Thread
 		else
 		{
 			final UsbIrp irp = new UsbIrp(command.getTransferBuffer());
+			irp.setIsochronousPackets(command.getIsoPackets());
 
 			final IUsbEndpoint usbEndpoint = usbDevice.getActiveUsbConfiguration().getUsbEndpoint(usbIpHeaderBasic.getBEndpointAddress().getByteCode());
 			if (usbEndpoint == null)
 			{
-				LOGGER.error("Client {} #{}: submit requested for non-existing endpoint with bus ID {}", clientSocket.getInetAddress(), usbIpHeaderBasic.getSeqNum(), usbIpHeaderBasic.getBusId());
+				LOGGER.error("Client {} #{}: submit requested for non-existing endpoint {} (dir {}) with bus ID {}", clientSocket.getInetAddress(), usbIpHeaderBasic.getSeqNum(), usbIpHeaderBasic.getBEndpointAddress().getEndPointNumber(), usbIpHeaderBasic.getBEndpointAddress().getDirection(), usbIpHeaderBasic.getBusId());
 
 				final UsbIpSubmitResponse usbIpSubmitResponse = UsbIpSubmitResponse.errorResponse(usbIpHeaderBasic.getSeqNum(), 1);
 				clientSocket.getOutputStream().write(usbIpSubmitResponse.toBuffer());
@@ -255,10 +301,11 @@ public class ServerConnectionThread extends Thread
 			}
 
 			final IUsbInterface usbInterface = usbEndpoint.getUsbInterface();
-			if (!interfacesClaimed.contains(usbInterface))
+			if (!interfacesClaimed.stream().anyMatch(i -> i.getUsbInterfaceDescriptor().bInterfaceNumber() == usbInterface.getUsbInterfaceDescriptor().bInterfaceNumber()))
 			{
-				usbInterface.claim();
+				usbInterface.claim(); // TODO: This goes south here. The alternative setting is set using LibUsb, but not registered in javax.usb, so we get exception from that here.
 				interfacesClaimed.add(usbInterface);
+				LOGGER.debug("Client {} #{}: interface {} claimed", clientSocket.getInetAddress(), usbIpHeaderBasic.getSeqNum(), usbInterface.getUsbInterfaceDescriptor().bInterfaceNumber());
 			}
 
 			final IUsbPipe usbPipe = usbEndpoint.getUsbPipe();
@@ -296,7 +343,6 @@ public class ServerConnectionThread extends Thread
 		final UsbIpHeaderBasic usbIpHeaderBasic = command.getUsbIpHeaderBasic();
 
 		final int seqNumToUnlink = command.getSeqNum();
-		LOGGER.debug("Client {} #{}: USBIP_CMD_UNLINK of seqNum {} (busId: {}, devNum: {}, direction: {}, endpoint: {})", clientSocket.getInetAddress(), usbIpHeaderBasic.getSeqNum(), seqNumToUnlink, HexFormatUtils.format(usbIpHeaderBasic.getBusId()), HexFormatUtils.format(usbIpHeaderBasic.getDevNum()), usbIpHeaderBasic.getDirection(), usbIpHeaderBasic.getEp());
 
 		final IUsbDeviceWithId usbDevice = attachedDevices.get(usbIpHeaderBasic.getDevId());
 		if (usbDevice == null)
@@ -317,7 +363,6 @@ public class ServerConnectionThread extends Thread
 			}
 			else
 			{
-				LOGGER.debug("Client {} #{}: unlink requested for URB with seqNum {}", clientSocket.getInetAddress(), usbIpHeaderBasic.getSeqNum(), seqNumToUnlink);
 				irpToAbort.abort(usbIpHeaderBasic.getSeqNum());
 			}
 		}

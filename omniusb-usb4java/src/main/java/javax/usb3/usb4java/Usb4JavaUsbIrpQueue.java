@@ -23,17 +23,21 @@ import java.nio.ByteBuffer;
 import javax.usb3.IUsbControlIrp;
 import javax.usb3.IUsbEndpointDescriptor;
 import javax.usb3.IUsbIrp;
+import javax.usb3.IUsbIrpIsoPacket;
 import javax.usb3.enumerated.EEndpointDirection;
+import javax.usb3.exception.UsbAbortException;
 import javax.usb3.exception.UsbException;
 import javax.usb3.request.BEndpointAddress;
 import javax.usb3.ri.ProcessIrpCallback;
 import javax.usb3.ri.ProcessIrpCallback.WrappingProcessIrpCallback;
+import javax.usb3.ri.UsbIrpIsoPacket;
 import javax.usb3.ri.UsbIrpQueue;
 import javax.usb3.ri.UsbPipe;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.usb4java.DeviceHandle;
+import org.usb4java.IsoPacketDescriptor;
 import org.usb4java.LibUsb;
 import org.usb4java.Transfer;
 import org.usb4java.TransferCallback;
@@ -86,7 +90,7 @@ public final class Usb4JavaUsbIrpQueue extends UsbIrpQueue
 				callback.onTransferComplete(irp.getActualLength());
 			}
 		};
-		transfer(deviceHandle, getEndpointDescriptor(), buffer, innerCallback);
+		transfer(irp, deviceHandle, getEndpointDescriptor(), buffer, irp.getNumberOfIsochronousPackets(), innerCallback);
 	}
 
 	/**
@@ -113,7 +117,7 @@ public final class Usb4JavaUsbIrpQueue extends UsbIrpQueue
 				callback.onTransferComplete(irp.getActualLength());
 			}
 		};
-		transfer(handle, getEndpointDescriptor(), buffer, innerCallback);
+		transfer(irp, handle, getEndpointDescriptor(), buffer, irp.getNumberOfIsochronousPackets(), innerCallback);
 	}
 
 	/**
@@ -127,24 +131,116 @@ public final class Usb4JavaUsbIrpQueue extends UsbIrpQueue
 	 * @return The number of transferred bytes.
 	 * @throws UsbException When data transfer fails.
 	 */
-	private void transfer(final DeviceHandle handle, final IUsbEndpointDescriptor descriptor, final ByteBuffer buffer, final ProcessIrpCallback callback)
+	private void transfer(final IUsbIrp irp, final DeviceHandle handle, final IUsbEndpointDescriptor descriptor, final ByteBuffer buffer, final int numIsoPackets, final ProcessIrpCallback callback)
 	{
 		switch (getEndpointTransferType())
 		{
 		case BULK:
-			transferBulk(handle, descriptor.endpointAddress(), buffer, callback);
+			transferBulk(irp, handle, descriptor.endpointAddress(), buffer, callback);
 			return;
 		case INTERRUPT:
-			transferInterrupt(handle, descriptor.endpointAddress(), buffer, callback);
+			transferInterrupt(irp, handle, descriptor.endpointAddress(), buffer, callback);
 			return;
 		case CONTROL:
 			callback.onTransferError("Unsupported endpoint type: " + getEndpointTransferType() + ": Control transfers require a Control-Type IRP.");
 			return;
 		case ISOCHRONOUS:
-			callback.onTransferError("Unsupported endpoint type: " + getEndpointTransferType() + ". libusb asynchronous (non-blocking) API for USB device I/O not yet implemented.");
+			transferIsochronous(irp, handle, descriptor.endpointAddress(), buffer, numIsoPackets, callback);
 			return;
 		default:
 			throw new AssertionError(getEndpointTransferType().name());
+		}
+	}
+
+	/**
+	 * /**
+	 * Transfers isochronous data from or to the device.
+	 *
+	 * @param handle The device handle.
+	 * @param address The endpoint address.
+	 * @param buffer The data buffer.
+	 * @param callback The callback that is called with the outcome of the transfer.
+	 * @throws UsbException When data transfer fails.
+	 */
+	private void transferIsochronous(final IUsbIrp irp, final DeviceHandle handle, final BEndpointAddress address, final ByteBuffer buffer, final int numIsoPackets, final ProcessIrpCallback callback)
+	{
+		final TransferCallback usb4JavaCallback = transfer -> {
+			final int status = transfer.status();
+
+			// Normally for IN transfers, we may want to retry on timeout. But for isochronous transfers, we don't do so.
+
+			int actualLength = 0;
+			if (status == LibUsb.TRANSFER_COMPLETED)
+			{
+				for (int i = 0; i < transfer.numIsoPackets(); i++)
+				{
+					final IUsbIrpIsoPacket sentIsoPackets = irp.getIsochronousPackets()[i];
+					final IsoPacketDescriptor usb4JavaReturnedPacket = transfer.isoPacketDesc()[i];
+					if (usb4JavaReturnedPacket.status() != LibUsb.TRANSFER_COMPLETED)
+					{
+						LOGGER.debug("Isochronous packet {} transfer completed with status: {} ({})", i, usb4JavaReturnedPacket.status(), LibUsb.strError(usb4JavaReturnedPacket.status()));
+					}
+					irp.getIsochronousPackets()[i] = new UsbIrpIsoPacket(sentIsoPackets.getOffset(), sentIsoPackets.getLength(), usb4JavaReturnedPacket.actualLength(), usb4JavaReturnedPacket.status());
+					actualLength += usb4JavaReturnedPacket.actualLength();
+				}
+			}
+
+			LibUsb.freeTransfer(transfer);
+			transfer = null;
+
+			switch (status)
+			{
+			// Transfer completed without error. Note that this does not indicate that the entire amount of requested data was transferred.
+			case LibUsb.TRANSFER_COMPLETED:
+				callback.onTransferComplete(actualLength);
+				break;
+
+			// Transfer timed out.
+			case LibUsb.TRANSFER_TIMED_OUT:
+				if (isAborting() || isClosed() || irpIsAborted(irp))
+				{
+					callback.onTransferAborted();
+				}
+				else
+				{
+					callback.onTransferTimedOut(LibUsb.strError(status));
+				}
+				break;
+
+			// Transfer failed.
+			case LibUsb.TRANSFER_ERROR:
+				callback.onTransferError(LibUsb.strError(status));
+				break;
+
+			// Transfer was cancelled.
+			case LibUsb.TRANSFER_CANCELLED:
+				callback.onTransferCancelled(LibUsb.strError(status));
+				break;
+
+			// For bulk/interrupt endpoints: halt condition detected (endpoint stalled). For control endpoints: control request not supported.
+			case LibUsb.TRANSFER_STALL:
+				callback.onTransferStall(LibUsb.strError(status));
+				break;
+
+			// Device was disconnected.
+			case LibUsb.TRANSFER_NO_DEVICE:
+				callback.onTransferNoDevice(LibUsb.strError(status));
+				break;
+
+			// Device sent more data than requested.
+			case LibUsb.TRANSFER_OVERFLOW:
+				callback.onTransferOverflow(LibUsb.strError(status));
+				break;
+			}
+		};
+
+		final Transfer transfer = LibUsb.allocTransfer(numIsoPackets);
+		LibUsb.fillIsoTransfer(transfer, handle, address.getByteCode(), buffer, numIsoPackets, usb4JavaCallback, null, UsbServiceInstanceConfiguration.TIMEOUT);
+		LibUsb.setIsoPacketLengths(transfer, buffer.capacity() / numIsoPackets);
+		int result = LibUsb.submitTransfer(transfer);
+		if (result < 0)
+		{
+			callback.onTransferError(LibUsb.strError(result));
 		}
 	}
 
@@ -157,12 +253,12 @@ public final class Usb4JavaUsbIrpQueue extends UsbIrpQueue
 	 * @param callback The callback that is called with the outcome of the transfer.
 	 * @throws UsbException When data transfer fails.
 	 */
-	private void transferBulk(final DeviceHandle handle, final BEndpointAddress address, final ByteBuffer buffer, final ProcessIrpCallback callback)
+	private void transferBulk(final IUsbIrp irp, final DeviceHandle handle, final BEndpointAddress address, final ByteBuffer buffer, final ProcessIrpCallback callback)
 	{
 		final TransferCallback usb4JavaCallback = transfer -> {
 			final int status = transfer.status();
 			// For IN transfers, we may want to retry on timeout
-			if (status == LibUsb.TRANSFER_TIMED_OUT && !isAborting() && !isClosed() && EEndpointDirection.DEVICE_TO_HOST.equals(getEndPointDirection()))
+			if (status == LibUsb.TRANSFER_TIMED_OUT && !irpIsAborted(irp) && !isAborting() && !isClosed() && EEndpointDirection.DEVICE_TO_HOST.equals(getEndPointDirection()))
 			{
 				LOGGER.debug("Bulk transfer timed out, retrying");
 				LibUsb.submitTransfer(transfer);
@@ -182,7 +278,7 @@ public final class Usb4JavaUsbIrpQueue extends UsbIrpQueue
 
 			// Transfer timed out.
 			case LibUsb.TRANSFER_TIMED_OUT:
-				if (isAborting() || isClosed())
+				if (isAborting() || isClosed() || irpIsAborted(irp))
 				{
 					callback.onTransferAborted();
 				}
@@ -237,12 +333,12 @@ public final class Usb4JavaUsbIrpQueue extends UsbIrpQueue
 	 * @param callback The callback that is called with the outcome of the transfer.
 	 * @throws UsbException When data transfer fails.
 	 */
-	private void transferInterrupt(final DeviceHandle handle, final BEndpointAddress address, final ByteBuffer buffer, final ProcessIrpCallback callback)
+	private void transferInterrupt(final IUsbIrp irp, final DeviceHandle handle, final BEndpointAddress address, final ByteBuffer buffer, final ProcessIrpCallback callback)
 	{
 		final TransferCallback usb4JavaCallback = transfer -> {
 			final int status = transfer.status();
 			// For IN transfers, we may want to retry on timeout
-			if (status == LibUsb.TRANSFER_TIMED_OUT && !isAborting() && !isClosed() && EEndpointDirection.DEVICE_TO_HOST.equals(getEndPointDirection()))
+			if (status == LibUsb.TRANSFER_TIMED_OUT && !irpIsAborted(irp) && !isAborting() && !isClosed() && EEndpointDirection.DEVICE_TO_HOST.equals(getEndPointDirection()))
 			{
 				LOGGER.debug("Interrupt transfer timed out, retrying");
 				LibUsb.submitTransfer(transfer);
@@ -262,7 +358,7 @@ public final class Usb4JavaUsbIrpQueue extends UsbIrpQueue
 
 			// Transfer timed out.
 			case LibUsb.TRANSFER_TIMED_OUT:
-				if (isAborting() || isClosed())
+				if (isAborting() || isClosed() || irpIsAborted(irp))
 				{
 					callback.onTransferAborted();
 				}
@@ -312,5 +408,10 @@ public final class Usb4JavaUsbIrpQueue extends UsbIrpQueue
 	protected void doControlTransfer(final IUsbControlIrp irp, final ProcessIrpCallback callback) throws UsbException
 	{
 		throw new IllegalStateException("Control transfers require dedicated control IRP queue.");
+	}
+
+	private static boolean irpIsAborted(final IUsbIrp irp)
+	{
+		return irp.getUsbException() instanceof UsbAbortException;
 	}
 }
