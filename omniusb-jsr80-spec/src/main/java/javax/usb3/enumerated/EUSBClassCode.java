@@ -202,6 +202,42 @@ public enum EUSBClassCode
 	 */
 	// TODO: Code the 3 sub classes.
 	AUDIO_VIDEO_DEVICE("Interface", (byte) 0x10),
+
+	/**
+	 * Base Class 11h (Billboard Device)
+	 * <p>
+	 * This base class is defined for devices that conform to the Billboard Device Class Specification found on the USB-IF website. That specification defines the usable set of SubClass and Protocol values. Values outside of that defined spec are reserved. These class codes can only be used in Device Descriptors.
+	 */
+	BILLBOARD_DEVICE("Device", (byte) 0x11),
+
+	/**
+	 * Base Class 12h (USB Type-C Bridge)
+	 * <p>
+	 * This base class is defined for devices that conform to the USB Type-C Bridge Device Class Specification found on the USB-IF website. That specification defines the usable set of SubClass and Protocol values. Values outside of that defined spec are reserved. These class codes can only be used in Device Descriptors.
+	 */
+	USB_TYPE_C_BRIDGE("Interface", (byte) 0x12),
+
+	/**
+	 * Base Class 13h (USB Bulk Display Protocol Device Class)
+	 * <p>
+	 * This base class is defined for devices that conform to the “VESA USB BDP Device Specification” found at the VESA website. This specification defines the usable set of SubClass and Protocol values. Values outside of this defined spec are reserved. These class codes can only be used in Interface Descriptors.
+	 */
+	USB_BULK_DISPLAY_PROTOCOL_DEVICE("Interface", (byte) 0x13),
+
+	/**
+	 * Base Class 14h (MCTP over USB Protocol Endpoint Device Class)
+	 * <p>
+	 * This base class is defined for devices that conform to the “MCTP over USB” found at the DMTF website as DSP0283. This specification defines the usable set of SubClass and Protocol values. Values outside of this defined spec are reserved. These class codes can only be used in Interface Descriptors.
+	 */
+	MCTP_OVER_USB_PROTOCOL_ENDPOINT_DEVICE("Interface", (byte) 0x14),
+
+	/**
+	 * Base Class 3Ch (I3C Device Class)
+	 * <p>
+	 * This base class is defined for devices that conform to the USB I3C Device Class Specification found on this USB-IF website. That specification defines the usable set of SubClass and Protocol values. Values outside of that defined spec are reserved. These class codes can only be used in Interface Descriptions.
+	 */
+	I3C_DEVICE("Interface", (byte) 0x3C),
+
 	/**
 	 * Base Class DCh (Diagnostic Device)
 	 * <p>
