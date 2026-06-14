@@ -8,23 +8,25 @@ import java.util.ArrayList;
 import java.util.HexFormat;
 
 import org.jurr.java.omniusb.mock.massstorage.bulkonlytransport.domain.CommandBlockWrapper;
-import org.jurr.java.omniusb.mock.massstorage.bulkonlytransport.domain.CommandStatusWrapper;
 import org.jurr.java.omniusb.mock.massstorage.bulkonlytransport.domain.CommandBlockWrapper.CBWFlags;
+import org.jurr.java.omniusb.mock.massstorage.bulkonlytransport.domain.CommandStatusWrapper;
 import org.jurr.java.omniusb.mock.massstorage.bulkonlytransport.domain.CommandStatusWrapper.CSWStatus;
 import org.jurr.java.omniusb.mock.massstorage.bulkonlytransport.firmware.scsi.InquiryCommand;
 import org.jurr.java.omniusb.mock.massstorage.bulkonlytransport.firmware.scsi.InquiryData;
+import org.jurr.java.omniusb.mock.massstorage.bulkonlytransport.firmware.scsi.InquiryData.PeripheralDeviceType;
+import org.jurr.java.omniusb.mock.massstorage.bulkonlytransport.firmware.scsi.InquiryData.PeripheralQualifier;
 import org.jurr.java.omniusb.mock.massstorage.bulkonlytransport.firmware.scsi.MediumRemovalCommand;
 import org.jurr.java.omniusb.mock.massstorage.bulkonlytransport.firmware.scsi.ModeSense6Command;
 import org.jurr.java.omniusb.mock.massstorage.bulkonlytransport.firmware.scsi.Read10Command;
 import org.jurr.java.omniusb.mock.massstorage.bulkonlytransport.firmware.scsi.ReadCapacityCommand;
 import org.jurr.java.omniusb.mock.massstorage.bulkonlytransport.firmware.scsi.ReadCapacityData;
+import org.jurr.java.omniusb.mock.massstorage.bulkonlytransport.firmware.scsi.ReadFormatCapacityCommand;
+import org.jurr.java.omniusb.mock.massstorage.bulkonlytransport.firmware.scsi.ReadFormatCapacityData;
 import org.jurr.java.omniusb.mock.massstorage.bulkonlytransport.firmware.scsi.SCSICommand;
 import org.jurr.java.omniusb.mock.massstorage.bulkonlytransport.firmware.scsi.SCSICommandFactory;
 import org.jurr.java.omniusb.mock.massstorage.bulkonlytransport.firmware.scsi.StartStopUnitCommand;
 import org.jurr.java.omniusb.mock.massstorage.bulkonlytransport.firmware.scsi.TestUnitReadyCommand;
 import org.jurr.java.omniusb.mock.massstorage.bulkonlytransport.firmware.scsi.Write10Command;
-import org.jurr.java.omniusb.mock.massstorage.bulkonlytransport.firmware.scsi.InquiryData.PeripheralDeviceType;
-import org.jurr.java.omniusb.mock.massstorage.bulkonlytransport.firmware.scsi.InquiryData.PeripheralQualifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -168,6 +170,9 @@ public class MockMemoryStickFirmware
 		case ReadCapacityCommand readCapacityCommand:
 			response = doReadCapacityCommand(readCapacityCommand, lun);
 			break;
+		case ReadFormatCapacityCommand readFormatCapacityCommand:
+			response = doReadFormatCapacityCommand(readFormatCapacityCommand, lun);
+			break;
 		case Read10Command read10Command:
 			response = doRead10Command(read10Command, dataTransferLength, lun);
 			break;
@@ -244,6 +249,13 @@ public class MockMemoryStickFirmware
 		final int blockSize = getBlockSize(lun);
 		final RandomAccessFile storage = luns.get(lun);
 		return new ReadCapacityData((int) (storage.length() / blockSize - 1), blockSize).toByteArray();
+	}
+
+	private byte[] doReadFormatCapacityCommand(final ReadFormatCapacityCommand readFormatCapacityCommand, final byte lun) throws IOException
+	{
+		final int blockSize = getBlockSize(lun);
+		final RandomAccessFile storage = luns.get(lun);
+		return new ReadFormatCapacityData((int) (storage.length() / blockSize), blockSize).toByteArray(readFormatCapacityCommand.getAllocationLength());
 	}
 
 	private byte[] doRead10Command(final Read10Command read10Command, final int dataTransferLength, final byte lun) throws IOException

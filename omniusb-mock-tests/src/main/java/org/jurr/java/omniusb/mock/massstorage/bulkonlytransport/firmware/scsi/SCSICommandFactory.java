@@ -2,6 +2,11 @@ package org.jurr.java.omniusb.mock.massstorage.bulkonlytransport.firmware.scsi;
 
 public class SCSICommandFactory
 {
+	private SCSICommandFactory()
+	{
+		/* This utility class should not be instantiated */
+	}
+
 	public static SCSICommand fromBytes(final byte[] buffer)
 	{
 		switch (buffer[0])
@@ -35,6 +40,8 @@ public class SCSICommandFactory
 			return new TestUnitReadyCommand(buffer);
 		// case WriteBufferCommand.COMMAND_CODE: // Is optional according to SPC-2 for removable media
 		// return new WriteBufferCommand(buffer);
+		case ReadFormatCapacityCommand.OPERATION_CODE:
+			return new ReadFormatCapacityCommand(buffer);
 		default:
 			throw new IllegalArgumentException("Unsupported SCSI command: " + String.format("0x%02X", buffer[0]));
 		}
