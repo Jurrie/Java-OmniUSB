@@ -187,7 +187,7 @@ public class UsbControlIrpQueue extends AUsbIrpQueue<IUsbControlIrp>
 						throw new UsbException("GET_STATUS only supports DEVICE_TO_HOST");
 					}
 					final byte[] buffer = irp.getData();
-					getUsbDevice().getActiveUsbConfiguration().getUsbConfigurationDescriptor().bmAttributes();
+					buffer[0] = getUsbDevice().getActiveUsbConfiguration().getUsbConfigurationDescriptor().bmAttributes();
 					buffer[1] = 0;
 					irp.setActualLength(2);
 					LOGGER.info("DEVICE GET_STATUS request complete, sent {} bytes", irp.getActualLength());
