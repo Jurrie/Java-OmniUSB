@@ -71,14 +71,14 @@ public class UsbIpSubmitResponse
 
 		responseHeader.toBuffer(responseBuffer);
 		responseBuffer.putInt(status);
-		responseBuffer.putInt(actualLength);
+		responseBuffer.putInt(data == null ? actualLength : data.length);
 		responseBuffer.putInt(startFrame);
 		responseBuffer.putInt(numberOfPackets);
 		responseBuffer.putInt(errorCount);
 		responseBuffer.position(responseBuffer.position() + 8); // Padding
 		if (data != null)
 		{
-			responseBuffer.put(data, 0, actualLength);
+			responseBuffer.put(data, 0, data.length);
 		}
 
 		return responseBuffer.array();
