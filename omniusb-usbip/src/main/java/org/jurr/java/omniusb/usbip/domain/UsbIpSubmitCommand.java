@@ -86,7 +86,11 @@ public class UsbIpSubmitCommand extends UsbIpCommand
 		final TransferFlags transferFlags = TransferFlags.fromBytes(headerBuffer.getInt());
 		final int transferBufferLength = headerBuffer.getInt();
 		final int startFrame = headerBuffer.getInt();
-		final int numberOfPackets = headerBuffer.getInt();
+		int numberOfPackets = headerBuffer.getInt();
+		if (numberOfPackets == 0xFFFFFFFF)
+		{
+			numberOfPackets = 0; // Documentation says to send 0xFFFFFFFF. https://github.com/vadimgrn/usbip-win2 does this, but we see Linux sending 0x00 instead. So we will accept both.
+		}
 		final int interval = headerBuffer.getInt();
 		final SetupPacket setupPacket = SetupPacket.fromBytes(headerBuffer);
 		final byte[] transferBuffer;
