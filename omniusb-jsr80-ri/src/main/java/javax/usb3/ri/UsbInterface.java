@@ -153,4 +153,16 @@ public class UsbInterface extends AUsbInterface
 		return String.format("USB interface %02x",
 				getUsbInterfaceDescriptor().bInterfaceNumber());
 	}
+
+	@Override
+	public byte getAlternativeSetting()
+	{
+		return 0; // TODO: Implement alternative setting support
+	}
+
+	@Override
+	public void setAlternativeSetting(byte wValue)
+	{
+		// TODO: Implement alternative setting support
+	}
 }

@@ -76,4 +76,17 @@ class ProxyUsbInterface extends AUsbInterface
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public byte getAlternativeSetting()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setAlternativeSetting(byte wValue)
+	{
+		// TODO Auto-generated method stub
+	}
 }

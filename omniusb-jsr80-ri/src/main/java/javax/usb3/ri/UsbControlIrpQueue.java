@@ -228,6 +228,73 @@ public class UsbControlIrpQueue extends AUsbIrpQueue<IUsbControlIrp>
 					throw new UnsupportedOperationException("BMRequestType Standard recipient DEVICE request " + request.getDeviceRequest() + " not implemented in mock");
 				}
 			case INTERFACE:
+				switch (request.getDeviceRequest())
+				{
+				case GET_STATUS:
+				{
+					LOGGER.info("INTERFACE GET_STATUS request for interface index {}", irp.wIndex());
+					if (bmRequestType.getDirection() != EEndpointDirection.DEVICE_TO_HOST)
+					{
+						throw new UsbException("GET_STATUS only supports DEVICE_TO_HOST");
+					}
+					final byte[] buffer = irp.getData();
+					buffer[0] = 0;
+					buffer[1] = 0;
+					irp.setActualLength(2);
+					LOGGER.info("INTERFACE GET_STATUS request complete, sent {} bytes", irp.getActualLength());
+					callback.onTransferComplete(2);
+					return;
+				}
+				case CLEAR_FEATURE:
+				{
+					if (bmRequestType.getDirection() != EEndpointDirection.DEVICE_TO_HOST)
+					{
+						throw new UsbException("CLEAR_FEATURE only supports DEVICE_TO_HOST");
+					}
+					LOGGER.info("INTERFACE CLEAR_FEATURE request for interface index {} and feature selector {}", irp.wIndex(), irp.wValue());
+					// Currently not used in standard
+					callback.onTransferComplete(0);
+					return;
+				}
+				case SET_FEATURE:
+				{
+					if (bmRequestType.getDirection() != EEndpointDirection.HOST_TO_DEVICE)
+					{
+						throw new UsbException("SET_FEATURE only supports HOST_TO_DEVICE");
+					}
+					LOGGER.info("INTERFACE SET_FEATURE request for interface index {} and feature selector {}", irp.wIndex(), irp.wValue());
+					// Currently not used in standard
+					callback.onTransferComplete(0);
+					return;
+				}
+				case GET_INTERFACE:
+				{
+					LOGGER.info("INTERFACE GET_INTERFACE request for interface index {}", irp.wIndex());
+					if (bmRequestType.getDirection() != EEndpointDirection.DEVICE_TO_HOST)
+					{
+						throw new UsbException("GET_INTERFACE only supports DEVICE_TO_HOST");
+					}
+					final byte[] buffer = irp.getData();
+					buffer[0] = getUsbDevice().getActiveUsbConfiguration().getUsbInterface((byte) irp.wIndex()).getAlternativeSetting();
+					irp.setActualLength(1);
+					LOGGER.info("INTERFACE GET_INTERFACE request complete, sent {} bytes", irp.getActualLength());
+					callback.onTransferComplete(1);
+					return;
+				}
+				case SET_INTERFACE:
+				{
+					if (bmRequestType.getDirection() != EEndpointDirection.HOST_TO_DEVICE)
+					{
+						throw new UsbException("SET_INTERFACE only supports HOST_TO_DEVICE");
+					}
+					LOGGER.info("INTERFACE SET_INTERFACE request for interface index {} and alternate setting {}", irp.wIndex(), irp.wValue());
+					getUsbDevice().getActiveUsbConfiguration().getUsbInterface((byte) irp.wIndex()).setAlternativeSetting((byte) irp.wValue());
+					callback.onTransferComplete(0);
+					return;
+				}
+				default:
+					throw new UnsupportedOperationException("BMRequestType Standard recipient INTERFACE request " + request.getDeviceRequest() + " not implemented in mock");
+				}
 			case ENDPOINT:
 			case OTHER:
 			default:

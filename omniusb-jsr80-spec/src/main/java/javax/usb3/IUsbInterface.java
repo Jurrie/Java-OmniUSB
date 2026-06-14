@@ -276,4 +276,8 @@ public interface IUsbInterface extends Comparable<IUsbInterface>
 	 *                disconnected.
 	 */
 	public String getInterfaceString() throws UsbException, UnsupportedEncodingException, UsbDisconnectedException;
+
+	public byte getAlternativeSetting();
+
+	public void setAlternativeSetting(byte wValue);
 }

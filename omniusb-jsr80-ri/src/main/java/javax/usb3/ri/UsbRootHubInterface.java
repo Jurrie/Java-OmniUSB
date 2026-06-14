@@ -197,4 +197,16 @@ public final class UsbRootHubInterface extends AUsbInterface
 	{
 		return null;
 	}
+
+	@Override
+	public byte getAlternativeSetting()
+	{
+		return 0; // TODO: Implement alternative setting support
+	}
+
+	@Override
+	public void setAlternativeSetting(byte wValue)
+	{
+		// TODO: Implement alternative setting support
+	}
 }
