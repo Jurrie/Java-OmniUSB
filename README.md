@@ -97,7 +97,21 @@ Pressing 'm' + 'enter' will attach the mock mouse to your kernel.
 Pressing 's' + 'enter' will attach the mock memory stick.
 Note that attaching devices using USB/IP requires root. You'll be prompted for your sudo password.
 
+If you run Windows, there are some USB/IP implementations available. I use [usbip-win2 from @vadimgrn](https://github.com/vadimgrn/usbip-win2). Both mock devices are verified to work with Windows 11.
+
 Please note that client-side USB/IP is not yet done. Server-side works.
+
+### Mouse mock device on Windows in QEmu
+There is a problem when using Windows 11 within QEmu, and that is that _QEmu_ is actually drawing the mouse pointer.
+When connecting the mock mouse, you'll not see the pointer updating. (Things are being highlighted as if the pointer was hovering over it.)
+To fix this, you should force Windows to draw the mouse pointer.
+Do this by:
+- Open the run dialog: Windows key + R
+- Run the command 'main.cpl' to open the Mouse Properties dialog
+- Go to the 'Pointer Options' tab
+- Under 'Visibility' check the 'Display pointer trails' checkbox
+- Drag the slider all the way to the 'Short' side
+- Click 'OK'
 
 # Help wanted
 If you would like to help out with this project: great! The code currently is half decent, but could be improved in a lot of areas.
