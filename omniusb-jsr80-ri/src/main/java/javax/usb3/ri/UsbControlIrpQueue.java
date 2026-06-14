@@ -115,15 +115,15 @@ public class UsbControlIrpQueue extends AUsbIrpQueue<IUsbControlIrp>
 				switch (request.getDeviceRequest())
 				{
 				case GET_DESCRIPTOR:
+					if (bmRequestType.getDirection() != EEndpointDirection.DEVICE_TO_HOST)
+					{
+						throw new UsbException("GET_DESCRIPTOR only supports DEVICE_TO_HOST");
+					}
 					switch (EDescriptorType.fromBytecode((byte) (irp.wValue() >> 8)))
 					{
 					case EDescriptorType.DEVICE:
 					{
 						LOGGER.info("DEVICE GET_DESCRIPTOR device descriptor request");
-						if (bmRequestType.getDirection() != EEndpointDirection.DEVICE_TO_HOST)
-						{
-							throw new UsbException("GET_DESCRIPTOR only supports DEVICE_TO_HOST");
-						}
 						final int actualLength = deviceDescriptorToBuffer(irp.getData(), getUsbDevice().getUsbDeviceDescriptor());
 						irp.setActualLength(actualLength);
 						LOGGER.info("DEVICE GET_DESCRIPTOR device descriptor request complete, sent {} bytes", actualLength);
@@ -134,11 +134,6 @@ public class UsbControlIrpQueue extends AUsbIrpQueue<IUsbControlIrp>
 					{
 						byte configurationIndex = (byte) irp.wValue();
 						LOGGER.info("DEVICE GET_DESCRIPTOR configuration descriptor request for configuration index {}", configurationIndex);
-						if (bmRequestType.getDirection() != EEndpointDirection.DEVICE_TO_HOST)
-						{
-							throw new UsbException("GET_DESCRIPTOR only supports DEVICE_TO_HOST");
-						}
-
 						final int actualLength = configurationDescriptorToBuffer(irp.getData(), getUsbDevice().getUsbConfiguration((byte) (configurationIndex + 1)));
 						irp.setActualLength(actualLength);
 						LOGGER.info("DEVICE GET_DESCRIPTOR configuration descriptor request complete, sent {} bytes", actualLength);
@@ -151,10 +146,6 @@ public class UsbControlIrpQueue extends AUsbIrpQueue<IUsbControlIrp>
 						if (stringIndex == 0x00 && irp.wIndex() == 0x00)
 						{
 							LOGGER.info("DEVICE GET_DESCRIPTOR string descriptor (supported languages) request");
-							if (bmRequestType.getDirection() != EEndpointDirection.DEVICE_TO_HOST)
-							{
-								throw new UsbException("GET_DESCRIPTOR only supports DEVICE_TO_HOST");
-							}
 							final int actualLength = languagesStringDescriptorToBuffer(irp.getData(), getUsbDevice().getLanguages());
 							irp.setActualLength(actualLength);
 							LOGGER.info("DEVICE GET_DESCRIPTOR string descriptor request complete, sent {} bytes", actualLength);
@@ -164,10 +155,6 @@ public class UsbControlIrpQueue extends AUsbIrpQueue<IUsbControlIrp>
 						else
 						{
 							LOGGER.info("DEVICE GET_DESCRIPTOR string descriptor request for string index {} and language {} (length: {})", stringIndex, irp.wIndex(), irp.getData().length);
-							if (bmRequestType.getDirection() != EEndpointDirection.DEVICE_TO_HOST)
-							{
-								throw new UsbException("GET_DESCRIPTOR only supports DEVICE_TO_HOST");
-							}
 							final IUsbStringDescriptor stringDescriptor = getUsbDevice().doGetUsbStringDescriptor(stringIndex);
 							final int actualLength = stringDescriptorToBuffer(irp.getData(), stringDescriptor); // TODO: We should support multi-language
 							irp.setActualLength(actualLength);
@@ -178,10 +165,6 @@ public class UsbControlIrpQueue extends AUsbIrpQueue<IUsbControlIrp>
 					}
 					case DEBUG:
 						LOGGER.info("DEVICE GET_DESCRIPTOR debug descriptor request");
-						if (bmRequestType.getDirection() != EEndpointDirection.DEVICE_TO_HOST)
-						{
-							throw new UsbException("GET_DESCRIPTOR only supports DEVICE_TO_HOST");
-						}
 						irp.setActualLength(0);
 						LOGGER.info("DEVICE GET_DESCRIPTOR debug descriptor request complete, sent {} bytes", irp.getActualLength());
 						callback.onTransferComplete(0);
@@ -394,15 +377,18 @@ public class UsbControlIrpQueue extends AUsbIrpQueue<IUsbControlIrp>
 
 	private static int languagesStringDescriptorToBuffer(final byte[] buffer, final short[] languages)
 	{
-		final ByteBuffer byteBuffer = ByteBuffer.wrap(buffer);
+		// TODO: We need some specialzed form of ByteBuffer which can write past the end of the buffer without problem. It should remember the total length though, so we can pass it back in this function.
+		final byte length = (byte) (Byte.BYTES + Byte.BYTES + languages.length * Short.BYTES);
+		final ByteBuffer byteBuffer = ByteBuffer.allocate(length);
 		byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-		byteBuffer.put((byte) (Byte.BYTES + Byte.BYTES + languages.length * Short.BYTES));
+		byteBuffer.put(length);
 		byteBuffer.put(EDescriptorType.STRING.getByteCode());
 		for (final short language : languages)
 		{
 			byteBuffer.putShort(language);
 		}
-		return byteBuffer.position();
+		System.arraycopy(byteBuffer.array(), 0, buffer, 0, Math.min(buffer.length, length));
+		return length;
 	}
 
 	private static int stringDescriptorToBuffer(final byte[] buffer, final IUsbStringDescriptor stringDescriptor)
