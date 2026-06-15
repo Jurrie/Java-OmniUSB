@@ -3,7 +3,7 @@
 
 	<groupId>org.jurr.java.omniusb</groupId>
 	<artifactId>omniusb-parent</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.1-SNAPSHOT</version>
 
 	<packaging>pom</packaging>
 
@@ -31,7 +31,7 @@
 		<connection>scm:git:git@github.com:Jurrie/Java-OmniUSB.git</connection>
 		<developerConnection>scm:git:git@github.com:Jurrie/Java-OmniUSB.git</developerConnection>
 		<url>https://github.com/Jurrie/Java-OmniUSB/tree/main</url>
-		<tag>OmniUSB-1.0.1</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<modules>
@@ -59,32 +59,32 @@
 			<dependency>
 				<groupId>org.jurr.java.omniusb</groupId>
 				<artifactId>omniusb-jsr80-spec</artifactId>
-				<version>1.0.1</version>
+				<version>1.0.1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jurr.java.omniusb</groupId>
 				<artifactId>omniusb-jsr80-ri</artifactId>
-				<version>1.0.1</version>
+				<version>1.0.1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jurr.java.omniusb</groupId>
 				<artifactId>omniusb-mock</artifactId>
-				<version>1.0.1</version>
+				<version>1.0.1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jurr.java.omniusb</groupId>
 				<artifactId>omniusb-usb4java</artifactId>
-				<version>1.0.1</version>
+				<version>1.0.1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jurr.java.omniusb</groupId>
 				<artifactId>omniusb-android</artifactId>
-				<version>1.0.1</version>
+				<version>1.0.1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jurr.java.omniusb</groupId>
 				<artifactId>omniusb-usbip</artifactId>
-				<version>1.0.1</version>
+				<version>1.0.1-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
