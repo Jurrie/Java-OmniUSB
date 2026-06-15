@@ -32,13 +32,17 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.jurr.java.slf4j.jansi</groupId>
 			<artifactId>slf4j-jansi</artifactId>
-			<version>1.0.0</version>
 		</dependency>
 
 		<dependency>

@@ -92,12 +92,13 @@ In the `omniusb-mock-tests` module there are two pure Java mock devices created:
 - A USB memory stick
 
 Both can be attached to your system using [USB/IP](https://wiki.archlinux.org/title/USB/IP).
-If you run Linux, you can simply run the `org.jurr.java.omniusb.mock.UsbIpServer` class (or alternatively download the [omniusb-mock-tests-<version>.jar from Central](https://central.sonatype.com/artifact/org.jurr.java.omniusb/omniusb-mock-tests/versions) and run  `java -jar omniusb-mock-tests-<version>.jar`). It's a console application.
+If you run Linux or Windows, you can simply run the `org.jurr.java.omniusb.mock.UsbIpServer` class (or alternatively download the [omniusb-mock-tests-<version>.jar from Central](https://central.sonatype.com/artifact/org.jurr.java.omniusb/omniusb-mock-tests/versions) and run  `java -jar omniusb-mock-tests-<version>.jar`). It's a console application.
 Pressing 'm' + 'enter' will attach the mock mouse to your kernel.
 Pressing 's' + 'enter' will attach the mock memory stick.
-Note that attaching devices using USB/IP requires root. You'll be prompted for your sudo password.
 
-If you run Windows, there are some USB/IP implementations available. I use [usbip-win2 from @vadimgrn](https://github.com/vadimgrn/usbip-win2). Both mock devices are verified to work with Windows 11.
+On Linux, note that attaching devices using USB/IP requires root. You'll be prompted for your sudo password.
+
+If you run Windows, you first need to install a USB/IP implementation. There are some USB/IP implementations available. I use [usbip-win2 from @vadimgrn](https://github.com/vadimgrn/usbip-win2). Both mock devices are verified to work with Windows 11.
 
 Please note that client-side USB/IP is not yet done. Server-side works.
 
