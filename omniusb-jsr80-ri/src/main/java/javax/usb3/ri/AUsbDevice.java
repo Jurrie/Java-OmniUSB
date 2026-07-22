@@ -17,7 +17,6 @@
  */
 package javax.usb3.ri;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -290,7 +289,7 @@ public abstract class AUsbDevice implements IUsbDeviceWithId, IUsbDevice
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final String getManufacturerString() throws UsbException, UnsupportedEncodingException
+	public final String getManufacturerString() throws UsbException
 	{
 		isConnected();
 		final byte index = getUsbDeviceDescriptor().iManufacturer();
@@ -301,7 +300,7 @@ public abstract class AUsbDevice implements IUsbDeviceWithId, IUsbDevice
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final String getSerialNumberString() throws UsbException, UnsupportedEncodingException
+	public final String getSerialNumberString() throws UsbException
 	{
 		isConnected();
 		final byte index = getUsbDeviceDescriptor().iSerialNumber();
@@ -312,7 +311,7 @@ public abstract class AUsbDevice implements IUsbDeviceWithId, IUsbDevice
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final String getProductString() throws UsbException, UnsupportedEncodingException
+	public final String getProductString() throws UsbException
 	{
 		isConnected();
 		final byte index = getUsbDeviceDescriptor().iProduct();
