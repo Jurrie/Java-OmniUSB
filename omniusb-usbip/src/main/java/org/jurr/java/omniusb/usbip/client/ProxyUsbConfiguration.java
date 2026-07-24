@@ -2,6 +2,7 @@ package org.jurr.java.omniusb.usbip.client;
 
 import java.util.List;
 
+import javax.usb3.IUsbDevice;
 import javax.usb3.IUsbInterface;
 import javax.usb3.descriptor.UsbConfigurationDescriptor;
 import javax.usb3.exception.UsbException;
@@ -14,7 +15,7 @@ class ProxyUsbConfiguration extends AUsbConfiguration
 {
 	ProxyUsbConfiguration(final ProxyUsbDevice device, final List<UsbInterfaceDetails> usbInterfaceDetails)
 	{
-		super(device, createUsbConfigurationDescriptor(usbInterfaceDetails));
+		super(device, createUsbConfigurationDescriptor(device, usbInterfaceDetails));
 
 		for (byte i = 0; i < usbInterfaceDetails.size(); i++)
 		{
@@ -22,9 +23,8 @@ class ProxyUsbConfiguration extends AUsbConfiguration
 		}
 	}
 
-	private static UsbConfigurationDescriptor createUsbConfigurationDescriptor(final List<UsbInterfaceDetails> usbInterfaceDetails)
+	private static UsbConfigurationDescriptor createUsbConfigurationDescriptor(final IUsbDevice device, final List<UsbInterfaceDetails> usbInterfaceDetails)
 	{
-		final short wTotalLength = 0; // TODO
 		final byte bNumInterfaces = (byte) usbInterfaceDetails.size();
 
 		// The following values are unknown without connecting the USB/IP device
@@ -33,7 +33,7 @@ class ProxyUsbConfiguration extends AUsbConfiguration
 		final BMConfigurationAttributes bmAttributes = new BMConfigurationAttributes(false, false);
 		final byte bMaxPower = 0;
 
-		return new UsbConfigurationDescriptor(wTotalLength, bNumInterfaces, bConfigurationValue, iConfiguration, bmAttributes, bMaxPower);
+		return new UsbConfigurationDescriptor(device, bNumInterfaces, bConfigurationValue, iConfiguration, bmAttributes, bMaxPower);
 	}
 
 	@Override

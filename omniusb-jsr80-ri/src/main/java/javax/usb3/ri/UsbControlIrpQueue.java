@@ -300,9 +300,11 @@ public class UsbControlIrpQueue extends AUsbIrpQueue<IUsbControlIrp>
 
 	private static int deviceDescriptorToBuffer(final byte[] buffer, final IUsbDeviceDescriptor deviceDescriptor)
 	{
-		final ByteBuffer byteBuffer = ByteBuffer.wrap(buffer);
+		final byte length = deviceDescriptor.bLength();
+		final ByteBuffer byteBuffer = ByteBuffer.allocate(length);
 		byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-		byteBuffer.put(deviceDescriptor.bLength());
+
+		byteBuffer.put(length);
 		byteBuffer.put(deviceDescriptor.bDescriptorType());
 		byteBuffer.putShort(deviceDescriptor.bcdUSB());
 		byteBuffer.put(deviceDescriptor.bDeviceClass());
@@ -316,89 +318,99 @@ public class UsbControlIrpQueue extends AUsbIrpQueue<IUsbControlIrp>
 		byteBuffer.put(deviceDescriptor.iProduct());
 		byteBuffer.put(deviceDescriptor.iSerialNumber());
 		byteBuffer.put(deviceDescriptor.bNumConfigurations());
-		return byteBuffer.position();
+
+		System.arraycopy(byteBuffer.array(), 0, buffer, 0, Math.min(buffer.length, length));
+
+		return Math.min(buffer.length, length);
 	}
 
 	private static int configurationDescriptorToBuffer(final byte[] buffer, final IUsbConfiguration usbConfiguration)
 	{
-		final ByteBuffer byteBuffer = ByteBuffer.wrap(buffer);
+		final short length = usbConfiguration.getUsbConfigurationDescriptor().wTotalLength();
+		final ByteBuffer byteBuffer = ByteBuffer.allocate(length);
 		byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
 		final IUsbConfigurationDescriptor usbConfigurationDescriptor = usbConfiguration.getUsbConfigurationDescriptor();
 		byteBuffer.put(usbConfigurationDescriptor.bLength());
 		byteBuffer.put(usbConfigurationDescriptor.bDescriptorType());
-		byteBuffer.putShort(usbConfigurationDescriptor.wTotalLength());
+		byteBuffer.putShort(length);
 		byteBuffer.put(usbConfigurationDescriptor.bNumInterfaces());
 		byteBuffer.put(usbConfigurationDescriptor.bConfigurationValue());
 		byteBuffer.put(usbConfigurationDescriptor.iConfiguration());
 		byteBuffer.put(usbConfigurationDescriptor.bmAttributes());
 		byteBuffer.put(usbConfigurationDescriptor.bMaxPower());
 
-		if (byteBuffer.hasRemaining())
+		for (final IUsbInterface usbInterface : usbConfiguration.getUsbInterfaces())
 		{
-			for (IUsbInterface usbInterface : usbConfiguration.getUsbInterfaces())
-			{
-				final IUsbInterfaceDescriptor usbInterfaceDescriptor = usbInterface.getUsbInterfaceDescriptor();
-				byteBuffer.put(usbInterfaceDescriptor.bLength());
-				byteBuffer.put(usbInterfaceDescriptor.bDescriptorType());
-				byteBuffer.put(usbInterfaceDescriptor.bInterfaceNumber());
-				byteBuffer.put(usbInterfaceDescriptor.bAlternateSetting());
-				byteBuffer.put(usbInterfaceDescriptor.bNumEndpoints());
-				byteBuffer.put(usbInterfaceDescriptor.bInterfaceClass());
-				byteBuffer.put(usbInterfaceDescriptor.bInterfaceSubClass());
-				byteBuffer.put(usbInterfaceDescriptor.bInterfaceProtocol());
-				byteBuffer.put(usbInterfaceDescriptor.iInterface());
+			final IUsbInterfaceDescriptor usbInterfaceDescriptor = usbInterface.getUsbInterfaceDescriptor();
+			byteBuffer.put(usbInterfaceDescriptor.bLength());
+			byteBuffer.put(usbInterfaceDescriptor.bDescriptorType());
+			byteBuffer.put(usbInterfaceDescriptor.bInterfaceNumber());
+			byteBuffer.put(usbInterfaceDescriptor.bAlternateSetting());
+			byteBuffer.put(usbInterfaceDescriptor.bNumEndpoints());
+			byteBuffer.put(usbInterfaceDescriptor.bInterfaceClass());
+			byteBuffer.put(usbInterfaceDescriptor.bInterfaceSubClass());
+			byteBuffer.put(usbInterfaceDescriptor.bInterfaceProtocol());
+			byteBuffer.put(usbInterfaceDescriptor.iInterface());
 
-				for (byte[] classSpecificDescriptor : usbInterface.getClassSpecificDescriptors())
+			for (final byte[] classSpecificDescriptor : usbInterface.getClassSpecificDescriptors())
+			{
+				byteBuffer.put(classSpecificDescriptor);
+			}
+
+			for (final IUsbEndpoint usbEndpoint : usbInterface.getUsbEndpoints())
+			{
+				final IUsbEndpointDescriptor usbEndpointDescriptor = usbEndpoint.getUsbEndpointDescriptor();
+				byteBuffer.put(usbEndpointDescriptor.bLength());
+				byteBuffer.put(usbEndpointDescriptor.bDescriptorType());
+				byteBuffer.put(usbEndpointDescriptor.bEndpointAddress());
+				byteBuffer.put(usbEndpointDescriptor.bmAttributes());
+				byteBuffer.putShort(usbEndpointDescriptor.wMaxPacketSize());
+				byteBuffer.put(usbEndpointDescriptor.bInterval());
+
+				for (final byte[] classSpecificDescriptor : usbEndpoint.getClassSpecificDescriptors())
 				{
 					byteBuffer.put(classSpecificDescriptor);
-				}
-
-				for (IUsbEndpoint usbEndpoint : usbInterface.getUsbEndpoints())
-				{
-					final IUsbEndpointDescriptor usbEndpointDescriptor = usbEndpoint.getUsbEndpointDescriptor();
-					byteBuffer.put(usbEndpointDescriptor.bLength());
-					byteBuffer.put(usbEndpointDescriptor.bDescriptorType());
-					byteBuffer.put(usbEndpointDescriptor.bEndpointAddress());
-					byteBuffer.put(usbEndpointDescriptor.bmAttributes());
-					byteBuffer.putShort(usbEndpointDescriptor.wMaxPacketSize());
-					byteBuffer.put(usbEndpointDescriptor.bInterval());
-
-					for (byte[] classSpecificDescriptor : usbEndpoint.getClassSpecificDescriptors())
-					{
-						byteBuffer.put(classSpecificDescriptor);
-					}
 				}
 			}
 		}
 
-		return byteBuffer.position();
+		System.arraycopy(byteBuffer.array(), 0, buffer, 0, Math.min(buffer.length, length));
+
+		return Math.min(buffer.length, length);
 	}
 
 	private static int languagesStringDescriptorToBuffer(final byte[] buffer, final short[] languages)
 	{
-		// TODO: We need some specialzed form of ByteBuffer which can write past the end of the buffer without problem. It should remember the total length though, so we can pass it back in this function.
 		final byte length = (byte) (Byte.BYTES + Byte.BYTES + languages.length * Short.BYTES);
 		final ByteBuffer byteBuffer = ByteBuffer.allocate(length);
 		byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+
 		byteBuffer.put(length);
 		byteBuffer.put(EDescriptorType.STRING.getByteCode());
 		for (final short language : languages)
 		{
 			byteBuffer.putShort(language);
 		}
+
 		System.arraycopy(byteBuffer.array(), 0, buffer, 0, Math.min(buffer.length, length));
-		return length;
+
+		return Math.min(buffer.length, length);
 	}
 
 	private static int stringDescriptorToBuffer(final byte[] buffer, final IUsbStringDescriptor stringDescriptor)
 	{
 		final byte[] stringInBytes = stringDescriptor.bString();
-		final ByteBuffer byteBuffer = ByteBuffer.wrap(buffer);
+		final byte length = (byte) (Byte.BYTES + Byte.BYTES + stringInBytes.length);
+		final ByteBuffer byteBuffer = ByteBuffer.allocate(length);
 		byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-		byteBuffer.put((byte) (Byte.BYTES + Byte.BYTES + stringInBytes.length));
+
+		byteBuffer.put(length);
 		byteBuffer.put(stringDescriptor.bDescriptorType());
-		byteBuffer.put(stringInBytes, 0, Math.min(byteBuffer.remaining(), stringInBytes.length));
-		return byteBuffer.position();
+		byteBuffer.put(stringInBytes);
+
+		System.arraycopy(byteBuffer.array(), 0, buffer, 0, Math.min(buffer.length, length));
+
+		return Math.min(buffer.length, length);
 	}
 }

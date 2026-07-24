@@ -10,7 +10,7 @@ public class MockMemoryStickConfiguration extends AUsbConfiguration
 {
 	protected MockMemoryStickConfiguration(final MockMemoryStickDevice device)
 	{
-		super(device, new UsbConfigurationDescriptor((short) 32, (byte) 1, (byte) 1, (byte) 4, new BMConfigurationAttributes(false, false), (byte) 0));
+		super(device, new UsbConfigurationDescriptor(device, (byte) 1, (byte) 1, (byte) 4, new BMConfigurationAttributes(false, false), (byte) 0));
 
 		addInterface(new MockMemoryStickInterface(this));
 	}

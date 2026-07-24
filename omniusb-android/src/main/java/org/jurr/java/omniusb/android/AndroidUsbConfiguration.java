@@ -44,13 +44,12 @@ public class AndroidUsbConfiguration extends javax.usb3.ri.AUsbConfiguration
 
 	private static UsbConfigurationDescriptor createDescriptorFromAndroidUsbConfiguration(final AndroidUsbDevice androidUsbDevice, final UsbConfiguration configuration)
 	{
-		final short wTotalLength = 0; // TODO: Calculate this
 		final byte bNumInterfaces = (byte) configuration.getInterfaceCount();
 		final byte bConfigurationValue = (byte) configuration.getId();
 		final byte iConfiguration = androidUsbDevice.addStringDescriptor(configuration.getName());
 		final BMConfigurationAttributes bmAttributes = new BMConfigurationAttributes(configuration.isSelfPowered(), configuration.isRemoteWakeup());
 		final byte bMaxPower = (byte) configuration.getMaxPower();
-		return new UsbConfigurationDescriptor(wTotalLength, bNumInterfaces, bConfigurationValue, iConfiguration, bmAttributes, bMaxPower);
+		return new UsbConfigurationDescriptor(androidUsbDevice, bNumInterfaces, bConfigurationValue, iConfiguration, bmAttributes, bMaxPower);
 	}
 
 	@Override

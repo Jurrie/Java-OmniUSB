@@ -46,7 +46,7 @@ public final class Usb4JavaUsbConfiguration extends AUsbConfiguration
 	 */
 	public Usb4JavaUsbConfiguration(final IUsbDevice device, final ConfigDescriptor descriptor)
 	{
-		super(device, convertDescriptor(descriptor));
+		super(device, convertDescriptor(device, descriptor));
 		for (org.usb4java.Interface jniInterface : descriptor.iface())
 		{
 			for (InterfaceDescriptor ifDescriptor : jniInterface.altsetting())
@@ -69,10 +69,10 @@ public final class Usb4JavaUsbConfiguration extends AUsbConfiguration
 		}
 	}
 
-	static IUsbConfigurationDescriptor convertDescriptor(final ConfigDescriptor input)
+	static IUsbConfigurationDescriptor convertDescriptor(final IUsbDevice device, final ConfigDescriptor input)
 	{
 		return new UsbConfigurationDescriptor(
-				input.wTotalLength(),
+				device,
 				input.bNumInterfaces(),
 				input.bConfigurationValue(),
 				input.iConfiguration(),

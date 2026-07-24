@@ -20,7 +20,11 @@ package javax.usb3.descriptor;
 
 import java.util.Objects;
 
+import javax.usb3.IUsbConfiguration;
 import javax.usb3.IUsbConfigurationDescriptor;
+import javax.usb3.IUsbDevice;
+import javax.usb3.IUsbEndpoint;
+import javax.usb3.IUsbInterface;
 import javax.usb3.enumerated.EDescriptorType;
 import javax.usb3.request.BMConfigurationAttributes;
 
@@ -53,9 +57,9 @@ import javax.usb3.request.BMConfigurationAttributes;
 public class UsbConfigurationDescriptor extends AUsbDescriptor implements IUsbConfigurationDescriptor
 {
 	/**
-	 * The total length.
+	 * The USB device this descriptor belongs to.
 	 */
-	private final short wTotalLength;
+	private final IUsbDevice device;
 
 	/**
 	 * The number of interfaces.
@@ -99,7 +103,7 @@ public class UsbConfigurationDescriptor extends AUsbDescriptor implements IUsbCo
 	 * @param bmAttributes The configuration attributes.
 	 * @param bMaxPower The maximum power.
 	 */
-	public UsbConfigurationDescriptor(final short wTotalLength,
+	public UsbConfigurationDescriptor(final IUsbDevice device,
 			final byte bNumInterfaces,
 			final byte bConfigurationValue,
 			final byte iConfiguration,
@@ -107,7 +111,7 @@ public class UsbConfigurationDescriptor extends AUsbDescriptor implements IUsbCo
 			final byte bMaxPower)
 	{
 		super(EDescriptorType.CONFIGURATION);
-		this.wTotalLength = wTotalLength;
+		this.device = device;
 		this.bNumInterfaces = bNumInterfaces;
 		this.bConfigurationValue = bConfigurationValue;
 		this.iConfiguration = iConfiguration;
@@ -123,9 +127,34 @@ public class UsbConfigurationDescriptor extends AUsbDescriptor implements IUsbCo
 	 * @return This descriptor's wTotalLength.
 	 */
 	@Override
-	public short wTotalLength() // TODO: We should calculate this value instead of receiving it via constructor
+	public short wTotalLength()
 	{
-		return wTotalLength;
+		return calculateWTotalLength(device.getUsbConfiguration(bConfigurationValue));
+	}
+
+	private static short calculateWTotalLength(final IUsbConfiguration usbConfiguration)
+	{
+		short result = usbConfiguration.getUsbConfigurationDescriptor().bLength();
+
+		for (final IUsbInterface usbInterface : usbConfiguration.getUsbInterfaces())
+		{
+			result += usbInterface.getUsbInterfaceDescriptor().bLength();
+			for (final byte[] classSpecificDescriptor : usbInterface.getClassSpecificDescriptors())
+			{
+				result += classSpecificDescriptor.length;
+			}
+
+			for (final IUsbEndpoint usbEndpoint : usbInterface.getUsbEndpoints())
+			{
+				result += usbEndpoint.getUsbEndpointDescriptor().bLength();
+				for (final byte[] classSpecificDescriptor : usbEndpoint.getClassSpecificDescriptors())
+				{
+					result += classSpecificDescriptor.length;
+				}
+			}
+		}
+
+		return result;
 	}
 
 	/**
@@ -206,7 +235,6 @@ public class UsbConfigurationDescriptor extends AUsbDescriptor implements IUsbCo
 	{
 		int hash = 3;
 		hash += 73 * hash + super.hashCode();
-		hash += 73 * hash + wTotalLength;
 		hash += 73 * hash + bNumInterfaces;
 		hash += 73 * hash + bConfigurationValue;
 		hash += 73 * hash + iConfiguration;

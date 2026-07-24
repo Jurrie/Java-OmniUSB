@@ -20,7 +20,6 @@ package javax.usb3.ri;
 import javax.usb3.IUsbDevice;
 import javax.usb3.IUsbInterface;
 import javax.usb3.descriptor.UsbConfigurationDescriptor;
-import javax.usb3.enumerated.EDescriptorType;
 import javax.usb3.exception.UsbException;
 import javax.usb3.request.BMConfigurationAttributes;
 
@@ -40,7 +39,7 @@ public final class UsbRootHubConfiguration extends AUsbConfiguration
 	public UsbRootHubConfiguration(final IUsbDevice device)
 	{
 		super(device, new UsbConfigurationDescriptor(
-				(short) (EDescriptorType.CONFIGURATION.getLength() + EDescriptorType.INTERFACE.getLength()), // wTotalLength
+				device,
 				(byte) 1, // bNumInterfaces
 				(byte) 1, // bConfigurationValue
 				(byte) 0, // iConfiguration

@@ -10,7 +10,7 @@ public class MockMouseConfiguration extends AUsbConfiguration
 {
 	protected MockMouseConfiguration(final MockMouseDevice device)
 	{
-		super(device, new UsbConfigurationDescriptor((short) 34, (byte) 1, (byte) 1, (byte) 3, new BMConfigurationAttributes(false, false), (byte) 0));
+		super(device, new UsbConfigurationDescriptor(device, (byte) 1, (byte) 1, (byte) 3, new BMConfigurationAttributes(false, false), (byte) 0));
 
 		addInterface(new MockMouseInterface(this));
 	}

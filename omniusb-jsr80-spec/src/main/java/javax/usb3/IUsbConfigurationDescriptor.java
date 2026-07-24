@@ -35,7 +35,6 @@ package javax.usb3;
  */
 public interface IUsbConfigurationDescriptor extends IUsbDescriptor
 {
-
 	/**
 	 * Total length of data returned for this configuration. Includes the combined
 	 * length of all descriptors (configuration, interface, endpoint, and class-
